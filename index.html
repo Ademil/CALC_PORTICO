@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP_Análise de Vigas - Calculadora Estrutural</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 20px);
+            pointer-events: none;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 42px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            margin: 10px 0 0 0;
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .panel {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h2, h3 {
+            margin: 0 0 25px 0;
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(30, 41, 59, 0.9);
+            border: 2px solid rgba(59, 130, 246, 0.5);
+            border-radius: 8px;
+            color: #e2e8f0;
+            font-size: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #3b82f6;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-calculate {
+            padding: 18px 48px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            font-size: 20px;
+            font-weight: 700;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(245, 158, 11, 0.5);
+        }
+
+        .carga-item {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .carga-badge {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge-pontual {
+            background: #10b981;
+        }
+
+        .badge-distribuida {
+            background: #3b82f6;
+        }
+
+        .carga-input {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .carga-input label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .carga-input input {
+            padding: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            font-size: 14px;
+        }
+
+        .btn-delete {
+            padding: 8px;
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            transition: all 0.3s ease;
+            border-radius: 6px;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .result-card {
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid;
+        }
+
+        .result-card-green {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.1) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .result-card-blue {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.1) 100%);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .result-card-orange {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.1) 100%);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-unit {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .btn-toggle {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .btn-toggle:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .calculo-memoria {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.8;
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            color: #94a3b8;
+            display: none;
+        }
+
+        .calculo-memoria.show {
+            display: block;
+        }
+
+        .calculo-memoria h4 {
+            margin: 0 0 15px 0;
+            color: #cbd5e1;
+        }
+
+        .calculo-memoria p {
+            margin: 5px 0;
+        }
+
+        .svg-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .diagram-stats {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .stat-card {
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid;
+        }
+
+        .stat-card-green {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .stat-card-red {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .footer {
+            max-width: 1200px;
+            margin: 50px auto 0;
+            text-align: center;
+            padding: 30px;
+            color: #64748b;
+            font-size: 14px;
+            border-top: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <h1>APAVAN-Análise de Vigas</h1>
+                <p class="subtitle">Calculadora profissional de esforços estruturais</p>
+            </div>
+        </div>
+
+        <!-- Painel de Configuração -->
+        <div class="panel">
+            <h2>⚙️ Propriedades da Viga</h2>
+
+            <div class="grid">
+                <div class="form-group">
+                    <label for="comprimento">Comprimento (m)</label>
+                    <input type="number" id="comprimento" value="10" step="0.1" min="0.1" oninput="renderizarVigaVisual()">
+                </div>
+
+                <div class="form-group">
+                    <label for="apoioEsq">Apoio Esquerdo</label>
+                    <select id="apoioEsq" onchange="renderizarVigaVisual()">
+                        <option value="engastado">Engastado</option>
+                        <option value="apoio">Apoio Simples</option>
+                        <option value="livre">Livre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="apoioDir">Apoio Direito</label>
+                    <select id="apoioDir" onchange="renderizarVigaVisual()">
+                        <option value="apoio" selected>Apoio Simples</option>
+                        <option value="livre">Livre</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="unidade">Unidade</label>
+                    <select id="unidade" onchange="renderizarVigaVisual()">
+                        <option value="kN" selected>kN (quilonewton)</option>
+                        <option value="tf">tf (tonelada-força)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- NOVOS CAMPOS PARA CÁLCULO DE ARMADURA -->
+            <h3 style="margin-top: 30px;">🔧 Dimensionamento de Armadura</h3>
+            <div class="grid">
+                <div class="form-group">
+                    <label for="fck">fck (MPa)</label>
+                    <input type="number" id="fck" value="25" step="0.1" min="0" oninput="atualizarDmin()">
+                </div>
+
+                <div class="form-group">
+                    <label for="fyk">fyk (MPa)</label>
+                    <input type="number" id="fyk" value="500" step="1" min="0" oninput="atualizarDmin()">
+                </div>
+
+                <div class="form-group">
+                    <label for="bw">Largura bw (cm)</label>
+                    <input type="number" id="bw" value="20" step="0.1" min="0" oninput="atualizarDmin()">
+                </div>
+
+                <div class="form-group">
+                    <label for="d">Altura útil d (cm)</label>
+                    <input type="number" id="d" value="45" step="0.1" min="0"
+                           oninput="atualizarDmin()">
+                    <div id="dminBox" style="display:none; margin-top:8px; padding:10px 14px;
+                         background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.35);
+                         border-radius:6px; font-size:12px; font-family:'JetBrains Mono',monospace;">
+                        <span style="color:#64748b;">d<sub>min</sub> = </span>
+                        <span id="dminVal" style="color:#10b981; font-weight:700; font-size:15px;">—</span>
+                        <span style="color:#64748b;"> cm</span>
+                        <button onclick="usarDmin()" style="margin-left:10px; padding:2px 10px;
+                                border:1px solid #10b981; background:transparent; color:#10b981;
+                                border-radius:4px; cursor:pointer; font-size:11px;">⬆ Usar</button>
+                        <div id="dminStatus" style="margin-top:4px; font-size:11px;"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cobrimento">Cobrimento (cm)</label>
+                    <input type="number" id="cobrimento" value="3" step="0.1" min="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="h">Altura total h (cm)</label>
+                    <input type="number" id="h" value="50" step="0.5" min="0">
+                    <small style="color:#64748b; font-size:11px;">para cálculo de Ig e Mr</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="classe">Classe de Agressividade</label>
+                    <select id="classe">
+                        <option value="I">CAA I - Fraca</option>
+                        <option value="II" selected>CAA II - Moderada</option>
+                        <option value="III">CAA III - Forte</option>
+                        <option value="IV">CAA IV - Muito Forte</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn btn-primary" onclick="adicionarCargaPontual()">
+                    ➕ Carga Pontual
+                </button>
+                <button class="btn btn-secondary" onclick="adicionarCargaDistribuida()">
+                    ➕ Carga Distribuída
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de Cargas -->
+        <div id="cargasContainer" class="hidden"></div>
+
+        <!-- Botão Calcular -->
+        <div class="center" style="margin-bottom: 30px;">
+            <button class="btn btn-calculate" onclick="calcular()">
+                🧮 Calcular
+            </button>
+        </div>
+
+        <!-- Visualização da Viga -->
+        <div id="vigaVisual" class="hidden"></div>
+
+        <!-- Resultados -->
+        <div id="resultadosContainer" class="hidden"></div>
+
+        <!-- NOVA SEÇÃO: Resultados de Armadura -->
+        <div id="armaduraContainer" class="hidden"></div>
+    </div>
+
+    <div class="footer">
+        <p>Calculadora de Vigas - Análise Estrutural Profissional</p>
+        <p style="margin-top: 10px; font-size: 12px;">Desenvolvido por APavan - para engenheiros calculistas</p>
+    </div>
+
+    <script>
+        // Estado da aplicação
+        let cargas = [];
+        let resultados = null;
+        let armaduraData = null; // armazena último cálculo de armadura para a flecha
+        let idCounter = 1;
+
+        // Adicionar carga pontual
+        function adicionarCargaPontual() {
+            const comprimento = parseFloat(document.getElementById('comprimento').value);
+            cargas.push({
+                id: idCounter++,
+                tipo: 'pontual',
+                posicao: comprimento / 2,
+                valor: 10
+            });
+            renderizarCargas();
+        }
+
+        // Adicionar carga distribuída
+        function adicionarCargaDistribuida() {
+            const comprimento = parseFloat(document.getElementById('comprimento').value);
+            cargas.push({
+                id: idCounter++,
+                tipo: 'distribuida',
+                inicio: 0,
+                fim: comprimento,
+                valor: 5
+            });
+            renderizarCargas();
+        }
+
+        // Remover carga
+        function removerCarga(id) {
+            cargas = cargas.filter(c => c.id !== id);
+            renderizarCargas();
+        }
+
+        // Atualizar carga — redesenha a viga imediatamente
+        function atualizarCarga(id, campo, valor) {
+            const carga = cargas.find(c => c.id === id);
+            if (carga) {
+                carga[campo] = parseFloat(valor) || 0;
+                renderizarVigaVisual(); // redesenha a cada keystroke
+            }
+        }
+
+        // Renderizar lista de cargas
+        function renderizarCargas() {
+            const container = document.getElementById('cargasContainer');
+            
+            if (cargas.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            const unidade = document.getElementById('unidade').value;
+
+            let html = '<div class="panel"><h3>📋 Carregamentos Aplicados</h3>';
+
+            cargas.forEach(carga => {
+                html += `<div class="carga-item">`;
+                html += `<span class="carga-badge ${carga.tipo === 'pontual' ? 'badge-pontual' : 'badge-distribuida'}">
+                    ${carga.tipo === 'pontual' ? 'Pontual' : 'Distribuída'}
+                </span>`;
+
+                if (carga.tipo === 'pontual') {
+                    html += `
+                        <div class="carga-input">
+                            <label>Posição (m)</label>
+                            <input type="number" value="${carga.posicao}" step="0.1" 
+                                oninput="atualizarCarga(${carga.id}, 'posicao', this.value)">
+                        </div>
+                        <div class="carga-input">
+                            <label>Valor (${unidade})</label>
+                            <input type="number" value="${carga.valor}" step="0.1" 
+                                oninput="atualizarCarga(${carga.id}, 'valor', this.value)">
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="carga-input">
+                            <label>Início (m)</label>
+                            <input type="number" value="${carga.inicio}" step="0.1" 
+                                oninput="atualizarCarga(${carga.id}, 'inicio', this.value)">
+                        </div>
+                        <div class="carga-input">
+                            <label>Fim (m)</label>
+                            <input type="number" value="${carga.fim}" step="0.1" 
+                                oninput="atualizarCarga(${carga.id}, 'fim', this.value)">
+                        </div>
+                        <div class="carga-input">
+                            <label>Valor (${unidade}/m)</label>
+                            <input type="number" value="${carga.valor}" step="0.1" 
+                                oninput="atualizarCarga(${carga.id}, 'valor', this.value)">
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <button class="btn btn-delete" onclick="removerCarga(${carga.id})">
+                        🗑️
+                    </button>
+                </div>`;
+            });
+
+            html += '</div>';
+            container.innerHTML = html;
+            
+            // Mostrar visualização da viga
+            renderizarVigaVisual();
+        }
+
+        // Gerar SVG da viga — redesenha toda vez que algo muda
+        function renderizarVigaVisual() {
+            if (cargas.length === 0) {
+                document.getElementById('vigaVisual').classList.add('hidden');
+                return;
+            }
+
+            const comprimentoViga = parseFloat(document.getElementById('comprimento').value) || 10;
+            const apoioEsq = document.getElementById('apoioEsq').value;
+            const apoioDir = document.getElementById('apoioDir').value;
+            const unidade  = document.getElementById('unidade').value;
+
+            const W = 820, H = 260;
+            const mL = 60, mR = 60, mT = 90, mB = 70;
+            const vigaY   = mT + (H - mT - mB) / 2;  // Y da linha da viga
+            const vigaH   = 22;                        // espessura visual da viga
+            const x0 = mL, x1 = W - mR;
+            const escala  = (x1 - x0) / comprimentoViga;
+
+            // Valor máximo de carga para escala das setas
+            const valoresCargas = cargas.map(c => c.valor);
+            const maxCarga = Math.max(...valoresCargas, 1);
+            const maxSetaH = 65;  // altura máxima da seta de carga em px
+
+            let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"
+                         style="background:#0a1628; border-radius:8px; width:100%; max-width:${W}px;">`;
+
+            // ── Defs ─────────────────────────────────────────────────────────────
+            svg += `<defs>
+              <marker id="arrowRed" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+                <path d="M0,0 L0,8 L8,4 z" fill="#ef4444"/>
+              </marker>
+              <marker id="arrowGreen" markerWidth="8" markerHeight="8" refX="4" refY="8" orient="auto">
+                <path d="M0,0 L8,0 L4,8 z" fill="#10b981"/>
+              </marker>
+              <marker id="arrowBlue" markerWidth="8" markerHeight="8" refX="4" refY="8" orient="auto">
+                <path d="M0,0 L8,0 L4,8 z" fill="#3b82f6"/>
+              </marker>
+              <linearGradient id="vigaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#2dd4bf" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#0f766e" stop-opacity="0.9"/>
+              </linearGradient>
+            </defs>`;
+
+            // ── Grid de referência (leve) ─────────────────────────────────────────
+            for (let i = 1; i < comprimentoViga; i++) {
+                const xG = x0 + i * escala;
+                svg += `<line x1="${xG}" y1="${mT}" x2="${xG}" y2="${H-mB}"
+                          stroke="rgba(71,85,105,0.3)" stroke-width="1" stroke-dasharray="3,4"/>`;
+            }
+            svg += `<line x1="${x0}" y1="${vigaY}" x2="${x1}" y2="${vigaY}"
+                      stroke="rgba(71,85,105,0.2)" stroke-width="1" stroke-dasharray="4,4"/>`;
+
+            // ── Cargas ────────────────────────────────────────────────────────────
+            cargas.forEach(carga => {
+                const setaH = Math.max(28, (carga.valor / maxCarga) * maxSetaH);
+                const yTopo = vigaY - vigaH/2 - setaH;
+
+                if (carga.tipo === 'pontual') {
+                    const cx = x0 + carga.posicao * escala;
+                    // Linha da seta
+                    svg += `<line x1="${cx}" y1="${yTopo}" x2="${cx}" y2="${vigaY - vigaH/2 - 1}"
+                              stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrowRed)"/>`;
+                    // Etiqueta
+                    svg += `<text x="${cx}" y="${yTopo - 8}" fill="#ef4444" font-size="12"
+                              text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                              font-weight="600">${carga.valor} ${unidade}</text>`;
+                    // Traço de posição
+                    svg += `<line x1="${cx}" y1="${vigaY + vigaH/2 + 4}" x2="${cx}" y2="${vigaY + vigaH/2 + 12}"
+                              stroke="#64748b" stroke-width="1" stroke-dasharray="2,2"/>`;
+                    svg += `<text x="${cx}" y="${H - mB + 18}" fill="#64748b" font-size="10"
+                              text-anchor="middle" font-family="'JetBrains Mono',monospace">${carga.posicao.toFixed(1)}m</text>`;
+
+                } else {
+                    const cx1 = x0 + (carga.inicio || 0) * escala;
+                    const cx2 = x0 + (carga.fim    || comprimentoViga) * escala;
+                    const largCarga = Math.max(cx2 - cx1, 2);
+                    // Retângulo de fundo
+                    svg += `<rect x="${cx1}" y="${yTopo}" width="${largCarga}" height="${setaH}"
+                              fill="rgba(239,68,68,0.1)" stroke="rgba(239,68,68,0.35)" stroke-width="1"
+                              stroke-dasharray="4,3" rx="2"/>`;
+                    // Setas distribuídas
+                    const nSetas = Math.max(2, Math.min(12, Math.floor(largCarga / 45)));
+                    for (let i = 0; i <= nSetas; i++) {
+                        const sx = cx1 + (largCarga * i / nSetas);
+                        svg += `<line x1="${sx}" y1="${yTopo + 4}" x2="${sx}" y2="${vigaY - vigaH/2 - 1}"
+                                  stroke="#ef4444" stroke-width="2" marker-end="url(#arrowRed)"/>`;
+                    }
+                    // Linha de topo
+                    svg += `<line x1="${cx1}" y1="${yTopo + 2}" x2="${cx2}" y2="${yTopo + 2}"
+                              stroke="#ef4444" stroke-width="2"/>`;
+                    // Etiqueta
+                    svg += `<text x="${(cx1+cx2)/2}" y="${yTopo - 8}" fill="#ef4444" font-size="12"
+                              text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                              font-weight="600">${carga.valor} ${unidade}/m</text>`;
+                    // Cota de extensão
+                    svg += `<text x="${(cx1+cx2)/2}" y="${H - mB + 18}" fill="#64748b" font-size="10"
+                              text-anchor="middle" font-family="'JetBrains Mono',monospace">
+                              ${(carga.inicio||0).toFixed(1)}→${(carga.fim||comprimentoViga).toFixed(1)}m</text>`;
+                }
+            });
+
+            // ── Corpo da viga ─────────────────────────────────────────────────────
+            svg += `<rect x="${x0}" y="${vigaY - vigaH/2}" width="${x1-x0}" height="${vigaH}"
+                      fill="url(#vigaGrad)" rx="3"/>`;
+            // Linha de centro
+            svg += `<line x1="${x0}" y1="${vigaY}" x2="${x1}" y2="${vigaY}"
+                      stroke="rgba(255,255,255,0.2)" stroke-width="1"/>`;
+
+            // ── Apoio esquerdo ────────────────────────────────────────────────────
+            const yAp = vigaY + vigaH/2;
+            if (apoioEsq === 'engastado') {
+                // Parede engastada
+                svg += `<rect x="${x0-12}" y="${vigaY - 40}" width="12" height="80"
+                          fill="#f59e0b" rx="2"/>`;
+                // Hachura
+                for (let dy = -35; dy <= 35; dy += 10) {
+                    svg += `<line x1="${x0-12}" y1="${vigaY+dy}" x2="${x0-2}" y2="${vigaY+dy+8}"
+                              stroke="rgba(245,158,11,0.4)" stroke-width="1.2"/>`;
+                }
+                svg += `<text x="${x0-6}" y="${yAp+22}" fill="#f59e0b" font-size="10"
+                          text-anchor="middle" font-family="'JetBrains Mono',monospace">E</text>`;
+            } else if (apoioEsq === 'apoio') {
+                // Triângulo apoio
+                svg += `<polygon points="${x0},${yAp} ${x0-14},${yAp+22} ${x0+14},${yAp+22}"
+                          fill="none" stroke="#10b981" stroke-width="2"/>`;
+                svg += `<circle cx="${x0}" cy="${yAp}" r="4" fill="#10b981"/>`;
+                // Linha do solo
+                svg += `<line x1="${x0-18}" y1="${yAp+22}" x2="${x0+18}" y2="${yAp+22}"
+                          stroke="#10b981" stroke-width="2"/>`;
+                for (let dx = -14; dx <= 14; dx += 7) {
+                    svg += `<line x1="${x0+dx}" y1="${yAp+22}" x2="${x0+dx-5}" y2="${yAp+30}"
+                              stroke="#10b981" stroke-width="1.2"/>`;
+                }
+                // Ra label (placeholder — atualizado após calcular)
+                svg += `<text x="${x0}" y="${yAp+46}" fill="#10b981" font-size="10"
+                          text-anchor="middle" font-family="'JetBrains Mono',monospace">Ra</text>`;
+            }
+
+            // ── Apoio direito ─────────────────────────────────────────────────────
+            if (apoioDir === 'apoio') {
+                svg += `<polygon points="${x1},${yAp} ${x1-14},${yAp+22} ${x1+14},${yAp+22}"
+                          fill="none" stroke="#3b82f6" stroke-width="2"/>`;
+                svg += `<circle cx="${x1}" cy="${yAp}" r="4" fill="#3b82f6"/>`;
+                svg += `<line x1="${x1-18}" y1="${yAp+22}" x2="${x1+18}" y2="${yAp+22}"
+                          stroke="#3b82f6" stroke-width="2"/>`;
+                for (let dx = -14; dx <= 14; dx += 7) {
+                    svg += `<line x1="${x1+dx}" y1="${yAp+22}" x2="${x1+dx-5}" y2="${yAp+30}"
+                              stroke="#3b82f6" stroke-width="1.2"/>`;
+                }
+                svg += `<text x="${x1}" y="${yAp+46}" fill="#3b82f6" font-size="10"
+                          text-anchor="middle" font-family="'JetBrains Mono',monospace">Rb</text>`;
+            } else if (apoioDir === 'livre') {
+                // Extremidade livre — nada
+            }
+
+            // ── Escala / régua ────────────────────────────────────────────────────
+            const passo = comprimentoViga <= 6 ? 1 : comprimentoViga <= 12 ? 2 : comprimentoViga <= 20 ? 5 : 10;
+            for (let pos = 0; pos <= comprimentoViga; pos += passo) {
+                const xM = x0 + pos * escala;
+                svg += `<line x1="${xM}" y1="${yAp + 4}" x2="${xM}" y2="${yAp + 9}"
+                          stroke="#64748b" stroke-width="1"/>`;
+                svg += `<text x="${xM}" y="${yAp + 20}" fill="#94a3b8" font-size="10"
+                          text-anchor="middle" font-family="'JetBrains Mono',monospace">${pos}m</text>`;
+            }
+            // Linha da régua
+            svg += `<line x1="${x0}" y1="${yAp+9}" x2="${x1}" y2="${yAp+9}"
+                      stroke="#475569" stroke-width="1"/>`;
+
+            // ── Comprimento total ─────────────────────────────────────────────────
+            svg += `<text x="${(x0+x1)/2}" y="${H - 6}" fill="#64748b" font-size="11"
+                      text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                      font-style="italic">L = ${comprimentoViga} m</text>`;
+
+            svg += `</svg>`;
+
+            const container = document.getElementById('vigaVisual');
+            container.classList.remove('hidden');
+            container.innerHTML = `
+                <div class="panel">
+                    <h3>👁️ Visualização da Viga</h3>
+                    <div class="svg-container" style="overflow-x:auto;">${svg}</div>
+                </div>
+            `;
+        }
+
+        // Calcular reações e diagramas
+        function calcular() {
+            if (cargas.length === 0) {
+                alert('Adicione pelo menos uma carga para calcular!');
+                return;
+            }
+
+            const comprimentoViga = parseFloat(document.getElementById('comprimento').value);
+            const apoioEsquerdo = document.getElementById('apoioEsq').value;
+            const apoioDireito = document.getElementById('apoioDir').value;
+            const unidade = document.getElementById('unidade').value;
+
+            // Calcular somatórios
+            let somaForcas = 0;
+            let somaMomentos = 0;
+
+            cargas.forEach(carga => {
+                if (carga.tipo === 'pontual') {
+                    somaForcas += carga.valor;
+                    somaMomentos += carga.valor * carga.posicao;
+                } else {
+                    const comprimentoCarga = carga.fim - carga.inicio;
+                    const forcaTotal = carga.valor * comprimentoCarga;
+                    const centroide = (carga.inicio + carga.fim) / 2;
+                    somaForcas += forcaTotal;
+                    somaMomentos += forcaTotal * centroide;
+                }
+            });
+
+            // Calcular reações
+            let Ra = 0, Rb = 0, Ma = 0;
+            
+            if (apoioEsquerdo === 'apoio' && apoioDireito === 'apoio') {
+                // Viga biapoiada
+                Rb = somaMomentos / comprimentoViga;
+                Ra = somaForcas - Rb;
+            } else if (apoioEsquerdo === 'engastado' && apoioDireito === 'livre') {
+                // Viga em balanço
+                Ra = somaForcas;
+                Ma = -somaMomentos;
+            } else if (apoioEsquerdo === 'engastado' && apoioDireito === 'apoio') {
+                // Viga engastada-apoiada (simplificado)
+                Rb = (somaMomentos * 3 - somaForcas * comprimentoViga) / (2 * comprimentoViga);
+                Ra = somaForcas - Rb;
+                Ma = -Ra * comprimentoViga + somaMomentos - Rb * comprimentoViga;
+            }
+
+            // Calcular esforço cortante e momento fletor em pontos
+            const numPontos = 100;
+            const pontos = [];
+            
+            for (let i = 0; i <= numPontos; i++) {
+                const x = (i / numPontos) * comprimentoViga;
+                let V = -Ra;
+                let M = -Ma + Ra * x;
+                
+                cargas.forEach(carga => {
+                    if (carga.tipo === 'pontual' && carga.posicao < x) {
+                        V += carga.valor;
+                        M -= carga.valor * (x - carga.posicao);
+                    } else if (carga.tipo === 'distribuida') {
+                        const inicioEfetivo = Math.max(carga.inicio, 0);
+                        const fimEfetivo = Math.min(carga.fim, x);
+                        
+                        if (fimEfetivo > inicioEfetivo) {
+                            const comprimentoAtivo = fimEfetivo - inicioEfetivo;
+                            const forcaParcial = carga.valor * comprimentoAtivo;
+                            const centroideParcial = inicioEfetivo + comprimentoAtivo / 2;
+                            
+                            V += forcaParcial;
+                            M -= forcaParcial * (x - centroideParcial);
+                        }
+                    }
+                });
+                
+                pontos.push({ x, V, M });
+            }
+
+            // Encontrar valores máximos e mínimos
+            const Vmax = Math.max(...pontos.map(p => p.V));
+            const Vmin = Math.min(...pontos.map(p => p.V));
+            const Mmax = Math.max(...pontos.map(p => p.M));
+            const Mmin = Math.min(...pontos.map(p => p.M));
+
+            resultados = {
+                Ra, Rb, Ma, pontos, Vmax, Vmin, Mmax, Mmin,
+                somaForcas, somaMomentos,
+                comprimentoViga, apoioEsquerdo, apoioDireito, unidade
+            };
+
+            renderizarResultados();
+        }
+
+        // Renderizar resultados
+        function renderizarResultados() {
+            const container = document.getElementById('resultadosContainer');
+            container.classList.remove('hidden');
+
+            const { Ra, Rb, Ma, apoioEsquerdo, apoioDireito, unidade, 
+                    somaForcas, somaMomentos, comprimentoViga, 
+                    Vmax, Vmin, Mmax, Mmin } = resultados;
+
+            let html = '<div class="panel"><h3>📊 Reações de Apoio</h3><div class="result-grid">';
+
+            if (apoioEsquerdo !== 'livre') {
+                html += `
+                    <div class="result-card result-card-green">
+                        <div class="result-label">Reação Apoio A</div>
+                        <div class="result-value" style="color: #10b981;">${Ra.toFixed(2)}</div>
+                        <div class="result-unit">${unidade}</div>
+                    </div>
+                `;
+            }
+
+            if (apoioDireito === 'apoio') {
+                html += `
+                    <div class="result-card result-card-blue">
+                        <div class="result-label">Reação Apoio B</div>
+                        <div class="result-value" style="color: #3b82f6;">${Rb.toFixed(2)}</div>
+                        <div class="result-unit">${unidade}</div>
+                    </div>
+                `;
+            }
+
+            if (apoioEsquerdo === 'engastado') {
+                html += `
+                    <div class="result-card result-card-orange">
+                        <div class="result-label">Momento em A</div>
+                        <div class="result-value" style="color: #f59e0b;">${Ma.toFixed(2)}</div>
+                        <div class="result-unit">${unidade}.m</div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+
+            html += '<button class="btn-toggle" onclick="toggleCalculo()">Mostrar Memória de Cálculo</button>';
+
+            html += `
+                <div class="calculo-memoria" id="calculoMemoria">
+                    <h4>Memória de Cálculo:</h4>
+                    <p>ΣFy = ${somaForcas.toFixed(2)} ${unidade}</p>
+                    <p>ΣM = ${somaMomentos.toFixed(2)} ${unidade}.m</p>
+                    <p style="margin-top: 15px; border-top: 1px solid rgba(100, 116, 139, 0.3); padding-top: 15px;">
+            `;
+
+            if (apoioEsquerdo === 'apoio' && apoioDireito === 'apoio') {
+                html += `
+                    <span style="color: #10b981;">Viga Biapoiada:</span><br>
+                    Rb = ΣM / L = ${somaMomentos.toFixed(2)} / ${comprimentoViga} = ${Rb.toFixed(2)} ${unidade}<br>
+                    Ra = ΣFy - Rb = ${somaForcas.toFixed(2)} - ${Rb.toFixed(2)} = ${Ra.toFixed(2)} ${unidade}
+                `;
+            } else if (apoioEsquerdo === 'engastado' && apoioDireito === 'livre') {
+                html += `
+                    <span style="color: #10b981;">Viga em Balanço:</span><br>
+                    Ra = ΣFy = ${Ra.toFixed(2)} ${unidade}<br>
+                    Ma = -ΣM = ${Ma.toFixed(2)} ${unidade}.m
+                `;
+            }
+
+            html += '</p></div></div>';
+
+            // Diagrama de Esforço Cortante
+            html += '<div class="panel">';
+            html += gerarDiagrama('V');
+            html += `
+                <div class="diagram-stats">
+                    <div class="stat-card stat-card-green">
+                        <div class="stat-label">Cortante Máximo</div>
+                        <div class="stat-value" style="color: #10b981;">${Vmax.toFixed(2)} ${unidade}</div>
+                    </div>
+                    <div class="stat-card stat-card-red">
+                        <div class="stat-label">Cortante Mínimo</div>
+                        <div class="stat-value" style="color: #ef4444;">${Vmin.toFixed(2)} ${unidade}</div>
+                    </div>
+                </div>
+            </div>`;
+
+            // Diagrama de Momento Fletor
+            html += '<div class="panel">';
+            html += gerarDiagrama('M');
+            html += `
+                <div class="diagram-stats">
+                    <div class="stat-card stat-card-green">
+                        <div class="stat-label">Momento Máximo</div>
+                        <div class="stat-value" style="color: #10b981;">${Mmax.toFixed(2)} ${unidade}.m</div>
+                    </div>
+                    <div class="stat-card stat-card-red">
+                        <div class="stat-label">Momento Mínimo</div>
+                        <div class="stat-value" style="color: #ef4444;">${Mmin.toFixed(2)} ${unidade}.m</div>
+                    </div>
+                </div>
+            </div>`;
+
+            container.innerHTML = html;
+        }
+
+        // Gerar diagrama SVG
+        function gerarDiagrama(tipo) {
+            const { pontos, comprimentoViga, unidade } = resultados;
+            
+            const largura = 800;
+            const altura = 240;
+            const margemTop = 35;
+            const margemBot = 35;
+            const escalaX = largura / comprimentoViga;
+            const yZero = margemTop + (altura - margemTop - margemBot) / 2;
+            const maxDisp = (altura - margemTop - margemBot) / 2 - 8;
+            
+            const valores = pontos.map(p => tipo === 'V' ? p.V : p.M);
+            const maxAbs = Math.max(Math.abs(Math.max(...valores)), Math.abs(Math.min(...valores)));
+            const escalaY = maxAbs > 0 ? maxDisp / maxAbs : 1;
+
+            // Convenção brasileira: M+ para baixo, V+ para cima
+            // Em coordenadas SVG (y cresce para baixo):
+            //   V+  → y < yZero  → fator = -1  (sem mudança)
+            //   M+  → y > yZero  → fator = +1  (invertido)
+            const fator = tipo === 'M' ? 1 : -1;
+
+            let svg = `<svg width="${largura}" height="${altura}" style="background: #0a1628; border-radius: 8px;">`;
+            
+            // Grid horizontal suave
+            for (let i = 1; i <= 3; i++) {
+                const yG = margemTop + (i / 4) * (altura - margemTop - margemBot);
+                svg += `<line x1="0" y1="${yG}" x2="${largura}" y2="${yG}" stroke="rgba(71,85,105,0.4)" stroke-width="1"/>`;
+            }
+
+            // Linha zero
+            svg += `<line x1="0" y1="${yZero}" x2="${largura}" y2="${yZero}" stroke="#475569" stroke-width="1.5" stroke-dasharray="6,4"/>`;
+            svg += `<text x="6" y="${yZero - 5}" fill="#475569" font-size="10" font-family="'JetBrains Mono', monospace">0</text>`;
+            
+            // Área do diagrama
+            let pathD = `M 0 ${yZero} `;
+            pontos.forEach((p) => {
+                const x = p.x * escalaX;
+                const val = tipo === 'V' ? p.V : p.M;
+                const y = yZero + fator * val * escalaY;
+                pathD += `L ${x} ${y} `;
+            });
+            pathD += `L ${largura} ${yZero} Z`;
+            
+            // Cor diferente para cada tipo
+            const corFill  = tipo === 'V' ? 'rgba(34,211,238,0.18)' : 'rgba(245,158,11,0.18)';
+            const corTrace = tipo === 'V' ? '#22d3ee' : '#f59e0b';
+            svg += `<path d="${pathD}" fill="${corFill}" stroke="${corTrace}" stroke-width="2"/>`;
+            
+            // Anotações de máximo e mínimo
+            const valorMax = Math.max(...valores);
+            const valorMin = Math.min(...valores);
+            const posMax = pontos.find(p => (tipo === 'V' ? p.V : p.M) === valorMax);
+            const posMin = pontos.find(p => (tipo === 'V' ? p.V : p.M) === valorMin);
+            
+            if (posMax && Math.abs(valorMax) > 0.001) {
+                const x = posMax.x * escalaX;
+                const y = yZero + fator * valorMax * escalaY;
+                // Para V+: ponto acima → label ainda mais acima
+                // Para M+: ponto abaixo → label ainda mais abaixo
+                const lbOff = fator === 1 ? 16 : -12;
+                svg += `<circle cx="${x}" cy="${y}" r="4" fill="#10b981"/>`;
+                svg += `<line x1="${x}" y1="${yZero}" x2="${x}" y2="${y}" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+                svg += `<text x="${x}" y="${y + lbOff}" fill="#10b981" font-size="11" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="600">${valorMax.toFixed(2)}</text>`;
+            }
+            
+            if (posMin && valorMin < -0.001) {
+                const x = posMin.x * escalaX;
+                const y = yZero + fator * valorMin * escalaY;
+                // Para V-: ponto abaixo → label abaixo
+                // Para M-: ponto acima → label acima
+                const lbOff = fator === 1 ? -12 : 16;
+                svg += `<circle cx="${x}" cy="${y}" r="4" fill="#ef4444"/>`;
+                svg += `<line x1="${x}" y1="${yZero}" x2="${x}" y2="${y}" stroke="#ef4444" stroke-width="1" stroke-dasharray="3,3" opacity="0.5"/>`;
+                svg += `<text x="${x}" y="${y + lbOff}" fill="#ef4444" font-size="11" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="600">${valorMin.toFixed(2)}</text>`;
+            }
+            
+            // Título e indicação de convenção
+            const titulo = tipo === 'V' 
+                ? `Diagrama de Esforço Cortante  (${unidade})`
+                : `Diagrama de Momento Fletor  (${unidade}.m)`;
+            svg += `<text x="${largura / 2}" y="22" fill="#e2e8f0" font-size="13" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-weight="700">${titulo}</text>`;
+
+            if (tipo === 'M') {
+                svg += `<text x="${largura - 8}" y="${yZero + 20}" fill="#f59e0b" font-size="10" text-anchor="end" font-family="'JetBrains Mono', monospace" opacity="0.8">M⁺ ↓</text>`;
+            }
+            
+            svg += `</svg>`;
+            return `<div class="svg-container">${svg}</div>`;
+        }
+
+        // Toggle memória de cálculo
+        function toggleCalculo() {
+            const elemento = document.getElementById('calculoMemoria');
+            const botao = event.target;
+            
+            if (elemento.classList.contains('show')) {
+                elemento.classList.remove('show');
+                botao.textContent = 'Mostrar Memória de Cálculo';
+            } else {
+                elemento.classList.add('show');
+                botao.textContent = 'Ocultar Memória de Cálculo';
+            }
+        }
+
+        // ============= NOVAS FUNÇÕES PARA CÁLCULO DE ARMADURA =============
+        
+        // ============= ALTURA ÚTIL MÍNIMA (d_min) =============
+        function calcularDmin() {
+            if (!resultados) return null;
+
+            const fck = parseFloat(document.getElementById('fck').value);
+            const fyk = parseFloat(document.getElementById('fyk').value);
+            const bw  = parseFloat(document.getElementById('bw').value);
+            if (!fck || !fyk || !bw) return null;
+
+            // Md (já majorado) em kN.m → kN.cm
+            let Md_kNm = resultados.Mmax;
+            if (resultados.unidade === 'tf') Md_kNm *= 9.81;
+            const Md_kNcm = Md_kNm * 100;
+
+            // Mk (característico) = Md / γf
+            const gf   = 1.4;
+            const Mk_kNcm = Md_kNcm / gf;
+
+            // KMD_lim (com fator 0,68) em função do aço
+            const gammac = 1.4, gammas = 1.15;
+            const fcd_kNcm2 = fck / (gammac * 10);   // kN/cm²
+            const fyd_kNcm2 = fyk / (gammas * 10);   // kN/cm²
+            const Es  = 20000;                        // kN/cm²
+            const ecu = 0.0035;
+            const eyd = fyd_kNcm2 / Es;
+            const KX_lim  = ecu / (ecu + eyd);
+            const KMD_lim = 0.68 * KX_lim * (1 - 0.4 * KX_lim);
+
+            // d_min = √( gf · Mk / (bw · KMD_lim · fcd) )
+            //       = √( Md_kNcm / (bw · KMD_lim · fcd_kNcm2) )
+            const dmin = Math.sqrt(Md_kNcm / (bw * KMD_lim * fcd_kNcm2));
+
+            return { dmin, Mk_kNcm, Md_kNcm, Md_kNm, fck, fcd_kNcm2, fyd_kNcm2, bw, KX_lim, KMD_lim, gf };
+        }
+
+        function atualizarDmin() {
+            const box = document.getElementById('dminBox');
+            const valEl = document.getElementById('dminVal');
+            const statusEl = document.getElementById('dminStatus');
+            if (!resultados) { box.style.display = 'none'; return; }
+
+            const r = calcularDmin();
+            if (!r) { box.style.display = 'none'; return; }
+
+            box.style.display = 'block';
+            valEl.textContent = r.dmin.toFixed(3);
+
+            const dAtual = parseFloat(document.getElementById('d').value);
+            if (dAtual >= r.dmin) {
+                statusEl.innerHTML = `<span style="color:#10b981;">✔ d adotado (${dAtual} cm) ≥ d<sub>min</sub> — OK</span>`;
+            } else {
+                statusEl.innerHTML = `<span style="color:#ef4444;">⚠ d adotado (${dAtual} cm) < d<sub>min</sub> — revisar seção!</span>`;
+            }
+        }
+
+        function usarDmin() {
+            const r = calcularDmin();
+            if (!r) return;
+            document.getElementById('d').value = Math.ceil(r.dmin * 10) / 10; // arredonda para cima 0,1 cm
+            atualizarDmin();
+        }
+
+        // Calcular área de armadura necessária
+        function calcularArmadura() {
+            if (!resultados) return null;
+
+            const fck        = parseFloat(document.getElementById('fck').value);
+            const fyk        = parseFloat(document.getElementById('fyk').value);
+            const bw         = parseFloat(document.getElementById('bw').value);
+            const d          = parseFloat(document.getElementById('d').value);
+            const cobrimento = parseFloat(document.getElementById('cobrimento').value);
+            const h          = parseFloat(document.getElementById('h').value) || (d + cobrimento + 2.0);
+
+            // ── α_c e λ (NBR 6118 item 17.2.2) ─────────────────────────────────
+            let alpha_c = fck <= 50 ? 0.85 : 0.85 * (1 - (fck-50)/200);
+            let lambda  = fck <= 50 ? 0.80 : 0.80 - (fck-50)/400;
+
+            // ── Resistências de cálculo ──────────────────────────────────────────
+            const gammac  = 1.4,  gammas = 1.15;
+            const fcd_MPa = fck  / gammac;      // MPa
+            const fyd_MPa = fyk  / gammas;      // MPa
+            const fcd     = fcd_MPa / 10;       // kN/cm²
+            const fyd     = fyd_MPa / 10;       // kN/cm²
+
+            // ── Momento de cálculo ───────────────────────────────────────────────
+            let Md_kNm = resultados.Mmax;
+            if (resultados.unidade === 'tf') Md_kNm *= 9.81;
+            const Md = Md_kNm * 100;            // kN.cm
+
+            // ── Es = 210 GPa (NBR 6118 item 8.3.2) e εcu ────────────────────────
+            const Es  = 21000;                  // kN/cm² = 210 GPa
+            const ecu = fck <= 50 ? 0.0035 : (0.0026 + 0.035 * Math.pow((90-fck)/100, 4));
+
+            // ── μ adimensional — eq. (4.25) ──────────────────────────────────────
+            const mu = Md / (fcd * bw * d * d);
+
+            // ── ξ3,lim — eq. (4.13/4.14) ────────────────────────────────────────
+            const eyd    = fyd / Es;
+            const KX_lim = ecu / (ecu + eyd);   // ξ3,lim
+
+            // ── μ_lim = α_c · λ · ξ_lim · (1 − λ/2 · ξ_lim) ───────────────────
+            const KMD_lim = alpha_c * lambda * KX_lim * (1 - (lambda/2) * KX_lim);
+
+            // ── ξ — eq. (4.27): ξ = (1/λ)(1 − √(1 − 2μ/α_c)) ─────────────────
+            let tipoArmadura, KX, KZ;
+            if (mu <= KMD_lim) {
+                tipoArmadura = 'Armadura Simples';
+                KX = (1/lambda) * (1 - Math.sqrt(1 - (2/alpha_c) * mu));
+                KZ = 1 - (lambda/2) * KX;
+            } else {
+                tipoArmadura = 'Armadura Dupla Necessária';
+                KX = KX_lim;
+                KZ = 1 - (lambda/2) * KX_lim;
+            }
+
+            // ── As — eq. (4.31): As = Md / (fyd · d · (1 − λ/2 · ξ)) ──────────
+            const As = Md / (KZ * d * fyd);
+
+            // ── Verificação cruzada — eq. (4.40): As = (α_c·fcd/fyd)·b·λ·ξ·d ──
+            const As_check = (alpha_c * fcd / fyd) * bw * lambda * KX * d;
+
+            // ── Taxa de armadura e limites ────────────────────────────────────────
+            const rho = (As / (bw * d)) * 100;
+            let rhoMin;
+            if      (fck <= 25) rhoMin = 0.15;
+            else if (fck <= 30) rhoMin = 0.17;
+            else if (fck <= 35) rhoMin = 0.19;
+            else if (fck <= 40) rhoMin = 0.21;
+            else if (fck <= 45) rhoMin = 0.24;
+            else                rhoMin = 0.26;
+            const AsMin  = (rhoMin/100) * bw * d;
+            const rhoMax = 4.0;
+            const AsMax  = (rhoMax/100) * bw * d;
+            const AsFinal = Math.max(As, AsMin);
+
+            // ── Detalhamento com até 3 camadas ────────────────────────────────────
+            const diametros = [6.3, 8, 10, 12.5, 16, 20, 25, 32];
+            const espacamentos = [];
+            diametros.forEach(phi => {
+                const phiCm = phi/10;
+                const area1 = Math.PI * phiCm * phiCm / 4;
+                const nTotal = Math.ceil(AsFinal / area1);
+                const areaTotal = nTotal * area1;
+                const espacMin = Math.max(2.0, phiCm, 1.2*phiCm);
+                const covLat = cobrimento + 0.6;
+                const bInt = bw - 2*covLat;
+                const nMaxCamada = bInt >= phiCm ? Math.floor((bInt-phiCm)/(phiCm+espacMin))+1 : 0;
+                for (let nc = 1; nc <= 3; nc++) {
+                    if (nMaxCamada <= 0) break;
+
+                    // ── Distribuição: encher a 1ª camada ao máximo,
+                    //    depois a 2ª, depois a 3ª (camada 1 = mais baixa = tracionada)
+                    const distrib = [];
+                    let restante = nTotal;
+                    for (let cam = 0; cam < nc; cam++) {
+                        const isUltima = cam === nc - 1;
+                        const nesta = isUltima
+                            ? restante                           // última camada: o que sobrar
+                            : Math.min(nMaxCamada, restante);   // demais: enche até o máximo
+                        distrib.push(nesta);
+                        restante -= nesta;
+                        if (restante <= 0) break;
+                    }
+
+                    // Rejeitar se não coube ou alguma camada excedeu o máximo
+                    if (restante > 0) continue;
+                    if (distrib.some(n => n > nMaxCamada)) continue;
+
+                    // Espaçamento na camada com mais barras (camada 1 = distrib[0])
+                    const nMaior = Math.max(...distrib);
+                    const espacLivre = nMaior > 1 ? (bInt - nMaior*phiCm)/(nMaior-1) : Infinity;
+                    const ok = espacLivre >= espacMin || nMaior <= 1;
+                    const espacEntrecamadas = Math.max(2.0, phiCm);
+
+                    // Label: exibe de cima para baixo (última camada → primeira)
+                    const labelCamadas = distrib.slice().reverse().join('+');
+
+                    espacamentos.push({
+                        phi, phiCm, nTotal, area1, areaTotal,
+                        numCamadas: nc, distrib,               // distrib[0]=cam.1 (inferior)
+                        nMaxCamada,
+                        espacLivre: isFinite(espacLivre) ? espacLivre : null,
+                        espacMin, espacEntrecamadas, ok,
+                        label: nc===1 ? `${nTotal}φ${phi}` : `${labelCamadas}φ${phi} (${nc} cam.)`
+                    });
+
+                    // Se 1 camada resolve com espaçamento OK, não testar mais
+                    if (nc===1 && ok) break;
+                }
+            });
+
+            // ── Mrd, ξ, εs e domínio ─────────────────────────────────────────────
+            const x   = KX * d;
+            const xi  = KX;
+            const es  = ecu * (1 - xi) / xi;
+            // Mrd = α_c · fcd · b · λ·x · (d − λ/2·x)  — kN.m
+            const Mrd   = alpha_c * fcd * bw * lambda * x * (d - (lambda/2)*x) / 100;
+            const mrdOk = Mrd >= Md_kNm;
+            const dominio = (() => {
+                if (xi > KX_lim) return { num:4, ok:false, label:'Domínio 4 ❌', cor:'#ef4444',
+                    desc:`ξ=${xi.toFixed(4)} > ξ3,lim=${KX_lim.toFixed(4)} — armadura dupla` };
+                if (es >= eyd)   return { num:3, ok:true,  label:'Domínio 3 ✔', cor:'#10b981',
+                    desc:`εs=${(es*1000).toFixed(3)}‰ ≥ εyd=${(eyd*1000).toFixed(3)}‰  e  ξ ≤ ξ3,lim — dúctil` };
+                return               { num:2, ok:true,  label:'Domínio 2',    cor:'#f59e0b',
+                    desc:`εs=${(es*1000).toFixed(3)}‰ < εyd — verificar ductilidade` };
+            })();
+
+            return {
+                fck, fyk, bw, d, h, cobrimento,
+                alpha_c, lambda, Es, ecu, eyd,
+                fcd: fcd_MPa, fyd: fyd_MPa, fcd_kNcm2: fcd, fyd_kNcm2: fyd,
+                Md: Md_kNm, mu, KMD: mu,
+                KX_lim, KMD_lim, KX, KZ, x, xi, es,
+                As, As_check, AsMin, AsMax, AsFinal,
+                rho, rhoMin, rhoMax, tipoArmadura, espacamentos,
+                Mrd, mrdOk, dominio
+            };
+        }
+
+        // ============= SEÇÃO TRANSVERSAL =============
+        function gerarSecaoTransversal(armadura, esp) {
+            const { bw, d, cobrimento, KX, h } = armadura;
+            const phi      = esp.phiCm;
+            const distrib  = esp.distrib;
+            const nc       = esp.numCamadas;
+            const espacEC  = esp.espacEntrecamadas || Math.max(2.0, phi);
+
+            // ── h é FIXO (entrada do usuário) ────────────────────────────────────
+            // Posição (do fundo) do centro de cada camada:
+            const covBot = cobrimento + 0.6 + phi / 2; // cam. mais baixa (i=0)
+            const yFromBot = distrib.map((_, i) => covBot + i * (phi + espacEC));
+
+            // CG da armadura = média ponderada (nBarras × y)
+            const totalBarras = distrib.reduce((s, n) => s + n, 0);
+            const cgFromBot   = distrib.reduce((s, n, i) => s + n * yFromBot[i], 0) / totalBarras;
+            const d_efetivo   = h - cgFromBot;   // d real para este detalhamento
+
+            // Canvas
+            const W = 560, H = 440;
+            const mL = 75, mR = 130, mT = 45, mB = 65;
+            const secW = W - mL - mR;
+            const secH = H - mT - mB;
+
+            const scale = Math.min(secW / bw, secH / h);
+            const dW = bw * scale;
+            const dH = h  * scale;
+
+            const x0 = mL + (secW - dW) / 2;
+            const y0 = mT + (secH - dH) / 2;
+
+            // Linha neutra — usa d_efetivo para KX
+            const xnPx = KX * d_efetivo * scale;
+
+            // Posições Y de cada camada no canvas
+            const camY = yFromBot.map(yb => y0 + dH - yb * scale);
+
+            // Y do CG da armadura no canvas
+            const cgY = y0 + dH - cgFromBot * scale;
+
+            const barR     = Math.max(3.5, phi * scale / 2);
+            const covLat   = cobrimento + 0.6;
+
+            let s = `<svg width="${W}" height="${H}" style="background:#0a1628;border-radius:8px;">`;
+
+            // ── Defs ──────────────────────────────────────────────────────────
+            s += `<defs>
+              <pattern id="hConc" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="10" stroke="rgba(148,163,184,0.12)" stroke-width="1.2"/>
+              </pattern>
+              <pattern id="hComp" patternUnits="userSpaceOnUse" width="7" height="7" patternTransform="rotate(45)">
+                <line x1="0" y1="0" x2="0" y2="7" stroke="rgba(59,130,246,0.35)" stroke-width="1.8"/>
+              </pattern>
+              <filter id="glow"><feGaussianBlur stdDeviation="2" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+              <marker id="dArr"  markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,1 L3.5,6 L7,1" fill="none" stroke="#64748b" stroke-width="1.2"/></marker>
+              <marker id="dArrU" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,6 L3.5,1 L7,6" fill="none" stroke="#64748b" stroke-width="1.2"/></marker>
+              <marker id="dArrG" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,6 L3.5,1 L7,6" fill="none" stroke="#10b981" stroke-width="1.2"/></marker>
+              <marker id="dArrO" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><path d="M0,6 L3.5,1 L7,6" fill="none" stroke="#f59e0b" stroke-width="1.2"/></marker>
+            </defs>`;
+
+            // ── Zona comprimida ───────────────────────────────────────────────
+            s += `<rect x="${x0}" y="${y0}" width="${dW}" height="${xnPx}" fill="url(#hComp)" rx="0"/>`;
+            s += `<rect x="${x0}" y="${y0}" width="${dW}" height="${xnPx}" fill="rgba(59,130,246,0.13)" rx="0"/>`;
+            s += `<rect x="${x0}" y="${y0+xnPx}" width="${dW}" height="${dH-xnPx}" fill="url(#hConc)"/>`;
+            s += `<rect x="${x0}" y="${y0+xnPx}" width="${dW}" height="${dH-xnPx}" fill="rgba(15,23,42,0.55)"/>`;
+            s += `<rect x="${x0}" y="${y0}" width="${dW}" height="${dH}" fill="none" stroke="#94a3b8" stroke-width="2.2" rx="1"/>`;
+
+            // ── Estribo ───────────────────────────────────────────────────────
+            const cX  = x0 + cobrimento * scale;
+            const cY  = y0 + cobrimento * scale;
+            const cWW = dW - 2 * cobrimento * scale;
+            const cHH = dH - 2 * cobrimento * scale;
+            s += `<rect x="${cX}" y="${cY}" width="${cWW}" height="${cHH}" fill="none" stroke="#64748b" stroke-width="1.8" stroke-dasharray="5,3" rx="2"/>`;
+
+            // ── Linha neutra ──────────────────────────────────────────────────
+            const lnY = y0 + xnPx;
+            s += `<line x1="${x0-18}" y1="${lnY}" x2="${x0+dW+18}" y2="${lnY}" stroke="#3b82f6" stroke-width="1.8" stroke-dasharray="9,5"/>`;
+            s += `<text x="${x0+dW+22}" y="${lnY+4}" fill="#3b82f6" font-size="10" font-family="'JetBrains Mono',monospace" font-weight="600">L.N.</text>`;
+
+            // ── Armaduras por camada ─────────────────────────────────────────
+            const camCores = ['#d97706','#b45309','#92400e']; // âmbar para cada camada
+            const camCoresBorda = ['#f59e0b','#d97706','#b45309'];
+
+            distrib.forEach((nBarras, ci) => {
+                const barY = camY[ci];
+                const bInt = bw - 2 * covLat;
+                const barXs = [];
+                if (nBarras === 1) {
+                    barXs.push(x0 + dW / 2);
+                } else {
+                    const step = (bInt - phi) / (nBarras - 1);
+                    for (let i = 0; i < nBarras; i++) {
+                        barXs.push(x0 + covLat * scale + (phi / 2 + i * step) * scale - (phi / 2) * scale);
+                        // simplificado:
+                    }
+                    barXs.length = 0;
+                    for (let i = 0; i < nBarras; i++) {
+                        barXs.push(x0 + (covLat + i * (bInt - phi) / (nBarras - 1)) * scale);
+                    }
+                }
+
+                barXs.forEach(bx => {
+                    s += `<circle cx="${bx}" cy="${barY}" r="${barR+2}" fill="rgba(245,158,11,0.15)" filter="url(#glow)"/>`;
+                    s += `<circle cx="${bx}" cy="${barY}" r="${barR}" fill="${camCores[ci]}" stroke="${camCoresBorda[ci]}" stroke-width="1.8"/>`;
+                    s += `<line x1="${bx-barR*.55}" y1="${barY}" x2="${bx+barR*.55}" y2="${barY}" stroke="#fbbf24" stroke-width="1.2"/>`;
+                    s += `<line x1="${bx}" y1="${barY-barR*.55}" x2="${bx}" y2="${barY+barR*.55}" stroke="#fbbf24" stroke-width="1.2"/>`;
+                });
+
+                // Label da camada no lado direito
+                const camLabel = `${nBarras}φ${esp.phi} (cam.${ci+1})`;
+                s += `<text x="${x0+dW+28}" y="${barY+4}" fill="${camCoresBorda[ci]}" font-size="10"
+                        font-family="'JetBrains Mono',monospace">${camLabel}</text>`;
+
+                // Linha de cota espaçamento entre camadas
+                if (ci > 0) {
+                    const yPrev = camY[ci-1];
+                    const xLinha = x0 - 35;
+                    s += `<line x1="${x0-4}" y1="${barY}" x2="${xLinha+10}" y2="${barY}" stroke="#64748b" stroke-width="0.8"/>`;
+                    s += `<line x1="${x0-4}" y1="${yPrev}" x2="${xLinha+10}" y2="${yPrev}" stroke="#64748b" stroke-width="0.8"/>`;
+                    s += `<line x1="${xLinha+14}" y1="${barY}" x2="${xLinha+14}" y2="${yPrev}" stroke="#64748b" stroke-width="1"
+                            marker-start="url(#dArr)" marker-end="url(#dArrU)"/>`;
+                    s += `<text x="${xLinha-2}" y="${(barY+yPrev)/2+4}" fill="#64748b" font-size="9"
+                            text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                            transform="rotate(-90,${xLinha-2},${(barY+yPrev)/2+4})">${espacEC.toFixed(1)}cm</text>`;
+                }
+            });
+
+            // ── Label zona comprimida ────────────────────────────────────────
+            if (xnPx >= 22) {
+                s += `<text x="${x0+dW/2}" y="${y0+xnPx/2+4}" fill="#93c5fd" font-size="10.5"
+                        text-anchor="middle" font-family="'JetBrains Mono',monospace" font-weight="700">COMP.</text>`;
+            }
+
+            // ── Cota bw (topo) ────────────────────────────────────────────────
+            const dimYt = y0 - 26;
+            s += `<line x1="${x0}" y1="${y0-4}" x2="${x0}" y2="${dimYt+2}" stroke="#64748b" stroke-width="1"/>`;
+            s += `<line x1="${x0+dW}" y1="${y0-4}" x2="${x0+dW}" y2="${dimYt+2}" stroke="#64748b" stroke-width="1"/>`;
+            s += `<line x1="${x0}" y1="${dimYt+8}" x2="${x0+dW}" y2="${dimYt+8}" stroke="#64748b" stroke-width="1.2" marker-start="url(#dArr)" marker-end="url(#dArr)"/>`;
+            s += `<text x="${x0+dW/2}" y="${dimYt}" fill="#e2e8f0" font-size="11.5"
+                    text-anchor="middle" font-family="'JetBrains Mono',monospace">bw = ${bw} cm</text>`;
+
+            // ── Cota h FIXO (esquerda) ─────────────────────────────────────────
+            const dimXl = x0 - 52;
+            s += `<line x1="${x0-4}" y1="${y0}" x2="${dimXl+12}" y2="${y0}" stroke="#64748b" stroke-width="1"/>`;
+            s += `<line x1="${x0-4}" y1="${y0+dH}" x2="${dimXl+12}" y2="${y0+dH}" stroke="#64748b" stroke-width="1"/>`;
+            s += `<line x1="${dimXl+18}" y1="${y0}" x2="${dimXl+18}" y2="${y0+dH}" stroke="#64748b" stroke-width="1.2" marker-start="url(#dArrU)" marker-end="url(#dArr)"/>`;
+            s += `<text x="${dimXl+2}" y="${y0+dH/2}" fill="#e2e8f0" font-size="11"
+                    text-anchor="middle" font-family="'JetBrains Mono',monospace"
+                    transform="rotate(-90,${dimXl+2},${y0+dH/2})">h = ${h} cm (fixo)</text>`;
+
+            // ── Cota d_efetivo (direita — do topo ao CG das armaduras) ─────────
+            const dimXr = x0 + dW + 80;
+            s += `<line x1="${x0+dW+4}" y1="${y0}" x2="${dimXr-4}" y2="${y0}" stroke="#10b981" stroke-width="1"/>`;
+            s += `<line x1="${x0+dW+4}" y1="${cgY}" x2="${dimXr-4}" y2="${cgY}" stroke="#10b981" stroke-width="1"/>`;
+            s += `<line x1="${dimXr}" y1="${y0}" x2="${dimXr}" y2="${cgY}" stroke="#10b981" stroke-width="1.2" marker-start="url(#dArrG)" marker-end="url(#dArrG)"/>`;
+            s += `<text x="${dimXr+6}" y="${y0+(cgY-y0)/2+4}" fill="#10b981" font-size="11"
+                    font-family="'JetBrains Mono',monospace">d=${d_efetivo.toFixed(2)}cm</text>`;
+            // Indicação do CG
+            if (nc > 1) {
+                s += `<line x1="${x0-8}" y1="${cgY}" x2="${x0+dW+8}" y2="${cgY}"
+                        stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="6,4"/>`;
+                s += `<text x="${x0+dW+10}" y="${cgY-5}" fill="#f59e0b" font-size="9.5"
+                        font-family="'JetBrains Mono',monospace">CG As</text>`;
+                s += `<text x="${x0+dW+10}" y="${cgY+12}" fill="#f59e0b" font-size="9.5"
+                        font-family="'JetBrains Mono',monospace">${cgFromBot.toFixed(2)}cm↑</text>`;
+            }
+
+            // ── Label cobrimento ─────────────────────────────────────────────────
+            s += `<text x="${x0+4}" y="${y0+dH-4}" fill="#94a3b8" font-size="9.5"
+                    font-family="'JetBrains Mono',monospace" opacity="0.8">c=${cobrimento}cm</text>`;
+
+            // ── Rodapé ───────────────────────────────────────────────────────────
+            const rodapeY = y0 + dH + 30;
+            const distribLabel = distrib.slice().reverse().join('+');
+            s += `<text x="${W/2}" y="${rodapeY}" fill="#f59e0b" font-size="13"
+                    text-anchor="middle" font-family="'JetBrains Mono',monospace" font-weight="700">
+                    ${distribLabel}φ${esp.phi}mm  (${nc} camada${nc>1?'s':''})  —  As = ${esp.areaTotal.toFixed(2)} cm²</text>`;
+            s += `<text x="${W/2}" y="${rodapeY+18}" fill="${nc>1?'#f59e0b':'#64748b'}" font-size="11"
+                    text-anchor="middle" font-family="'JetBrains Mono',monospace">
+                    d${nc>1?' efetivo (CG das camadas)':''} = ${d_efetivo.toFixed(2)} cm  ${nc>1?'≠':''} ${nc>1?'d₁='+d.toFixed(2)+' cm (cam. 1)':''}</text>`;
+
+            s += `</svg>`;
+            return s;
+        }
+
+        // Renderizar resultados de armadura
+        function renderizarArmadura() {
+            const armadura = calcularArmadura();
+            if (!armadura) return;
+            armaduraData = armadura; // salva globalmente para cálculo da flecha
+
+            const container = document.getElementById('armaduraContainer');
+            container.classList.remove('hidden');
+
+            let html = `
+                <div class="panel">
+                    <h3>⚙️ Dimensionamento da Armadura Longitudinal</h3>
+                    
+                    <div class="result-grid" style="margin-bottom: 25px;">
+                        <div class="result-card result-card-blue">
+                            <div class="result-label">Momento de Cálculo</div>
+                            <div class="result-value" style="color: #3b82f6;">${armadura.Md.toFixed(2)}</div>
+                            <div class="result-unit">kN.m</div>
+                        </div>
+                        
+                        <div class="result-card result-card-green">
+                            <div class="result-label">Área de Aço Calculada</div>
+                            <div class="result-value" style="color: #10b981;">${armadura.As.toFixed(2)}</div>
+                            <div class="result-unit">cm²</div>
+                        </div>
+                        
+                        <div class="result-card result-card-orange">
+                            <div class="result-label">Área de Aço Adotada</div>
+                            <div class="result-value" style="color: #f59e0b;">${armadura.AsFinal.toFixed(2)}</div>
+                            <div class="result-unit">cm²</div>
+                        </div>
+                        
+                        <div class="result-card result-card-blue">
+                            <div class="result-label">Taxa de Armadura</div>
+                            <div class="result-value" style="color: #3b82f6;">${armadura.rho.toFixed(3)}</div>
+                            <div class="result-unit">%</div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(30, 41, 59, 0.5); padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid rgba(100, 116, 139, 0.3);">
+                        <h4 style="margin: 0 0 15px 0; color: #cbd5e1; font-size: 16px;">Parâmetros de Cálculo:</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #94a3b8;">
+                            <div>fck = ${armadura.fck} MPa</div>
+                            <div>fcd = ${armadura.fcd.toFixed(2)} MPa</div>
+                            <div>fyk = ${armadura.fyk} MPa</div>
+                            <div>fyd = ${armadura.fyd.toFixed(2)} MPa</div>
+                            <div>α<sub>c</sub> = ${armadura.alpha_c.toFixed(4)}</div>
+                            <div>λ = ${armadura.lambda.toFixed(4)}</div>
+                            <div>bw = ${armadura.bw} cm</div>
+                            <div>d = ${armadura.d} cm</div>
+                            <div>μ = ${armadura.mu.toFixed(5)}</div>
+                            <div>μ<sub>lim</sub> = ${armadura.KMD_lim.toFixed(5)}</div>
+                            <div>ξ = ${armadura.KX.toFixed(5)}</div>
+                            <div>ξ<sub>3,lim</sub> = ${armadura.KX_lim.toFixed(5)}</div>
+                            <div>z/d = ${armadura.KZ.toFixed(5)}</div>
+                            <div>E<sub>s</sub> = 210 GPa</div>
+                            <div>ε<sub>cu</sub> = ${(armadura.ecu*1000).toFixed(2)}‰</div>
+                            <div>ε<sub>yd</sub> = ${(armadura.eyd*1000).toFixed(3)}‰</div>
+                        </div>
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(100, 116, 139, 0.3);">
+                            <strong style="color: ${armadura.tipoArmadura === 'Armadura Simples' ? '#10b981' : '#f59e0b'};">
+                                ${armadura.tipoArmadura}
+                            </strong>
+                        </div>
+                        <div style="margin-top: 10px; font-size: 12px;">
+                            <div>As,mín = ${armadura.AsMin.toFixed(2)} cm² (ρ,mín = ${armadura.rhoMin}% — NBR 6118 Tab. 17.3 para fck ${armadura.fck} MPa)</div>
+                            <div>As,máx = ${armadura.AsMax.toFixed(2)} cm² (ρ,máx = ${armadura.rhoMax}%)</div>
+                        </div>
+                    </div>
+
+                    <h4 style="margin: 20px 0 15px 0; color: #cbd5e1; font-size: 18px;">Opções de Detalhamento:</h4>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 13px;">
+                            <thead>
+                                <tr style="background: rgba(59, 130, 246, 0.2); border-bottom: 2px solid #3b82f6;">
+                                    <th style="padding: 12px; text-align: left; color: #cbd5e1;">Diâmetro (mm)</th>
+                                    <th style="padding: 12px; text-align: center; color: #cbd5e1;">Distribuição</th>
+                                    <th style="padding: 12px; text-align: center; color: #cbd5e1;">Camadas</th>
+                                    <th style="padding: 12px; text-align: center; color: #cbd5e1;">As total (cm²)</th>
+                                    <th style="padding: 12px; text-align: center; color: #cbd5e1;">Espaç. livre (cm)</th>
+                                    <th style="padding: 12px; text-align: center; color: #cbd5e1;">Espaç. mín (cm)</th>
+                                    <th style="padding: 12px; text-align: center; color: #cbd5e1;">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+            `;
+
+            armadura.espacamentos.forEach(esp => {
+                const statusColor = esp.ok ? '#10b981' : '#ef4444';
+                const statusText  = esp.ok ? '✓ OK' : '✗ Não cabe';
+                const bgColor     = esp.ok
+                    ? (esp.numCamadas > 1 ? 'rgba(16,185,129,0.08)' : 'rgba(16,185,129,0.13)')
+                    : 'rgba(239,68,68,0.07)';
+                const camBadge = esp.numCamadas > 1
+                    ? `<span style="background:rgba(245,158,11,0.2);color:#f59e0b;padding:1px 7px;border-radius:10px;font-size:11px;">${esp.numCamadas} cam.</span>`
+                    : `<span style="background:rgba(16,185,129,0.15);color:#10b981;padding:1px 7px;border-radius:10px;font-size:11px;">1 cam.</span>`;
+
+                // Distribuição visual: ex "4+4" ou "5+5+5"
+                const distribStr = esp.distrib.slice().reverse().join(' + ');
+
+                html += `
+                    <tr style="background: ${bgColor}; border-bottom: 1px solid rgba(100,116,139,0.2);">
+                        <td style="padding:10px; color:#e2e8f0; font-weight:600;">φ ${esp.phi} mm</td>
+                        <td style="padding:10px; text-align:center; color:#e2e8f0;">${distribStr} = ${esp.nTotal} barras</td>
+                        <td style="padding:10px; text-align:center;">${camBadge}</td>
+                        <td style="padding:10px; text-align:center; color:#e2e8f0;">${esp.areaTotal.toFixed(2)}</td>
+                        <td style="padding:10px; text-align:center; color:#e2e8f0;">${esp.espacLivre !== null ? esp.espacLivre.toFixed(2) : '—'}</td>
+                        <td style="padding:10px; text-align:center; color:#e2e8f0;">${esp.espacMin.toFixed(2)}</td>
+                        <td style="padding:10px; text-align:center; color:${statusColor}; font-weight:bold;">${statusText}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 15px; background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6; border-radius: 4px; font-size: 13px; color: #94a3b8;">
+                        <strong style="color: #3b82f6;">Nota:</strong> Verificar detalhamento conforme NBR 6118. 
+                        Espaçamento livre considera cobrimento de ${armadura.cobrimento} cm. 
+                        As opções marcadas com ✓ OK atendem ao espaçamento mínimo entre barras.
+                    </div>
+                </div>
+            `;
+
+            // ── Painel d_min ──────────────────────────────────────────────────────
+            const a = armadura; // alias curto — declarado aqui para uso em todos os painéis abaixo
+
+            // ── Painel Momento de Fissuração Mr ──────────────────────────────
+            {
+                const { fck, bw, h, d, Md } = a;
+
+                // α = 1,5 para seções retangulares (NBR 6118 item 17.3.1)
+                // α = 1,2 para seções T ou duplo T
+                // α = 1,3 para seções I ou T invertido
+                const alpha = 1.5;
+
+                // Resistência média à tração (NBR 6118 item 8.2.5)
+                // fck ≤ 50 MPa → fct,m = 0,30 · fck^(2/3)  [MPa]
+                // fck >  50 MPa → fct,m = 2,12 · ln(1 + fck/10) [MPa]
+                const fctm = fck <= 50
+                    ? 0.30 * Math.pow(fck, 2/3)
+                    : 2.12 * Math.log(1 + fck / 10);
+
+                // Momento de inércia da seção bruta
+                // Ig = bw · h³ / 12   [cm⁴]
+                const Ig = bw * Math.pow(h, 3) / 12;
+
+                // Distância do CG à fibra tracionada (seção retangular)
+                // yt = h / 2   [cm]
+                const yt = h / 2;
+
+                // Mr = α · fct,m · Ig / yt    [kN.cm → ÷100 → kN.m]
+                // fct,m em MPa = kN/cm² × 10  → dividimos por 10 para kN/cm²
+                const fctm_kNcm2 = fctm / 10;
+                const Mr_kNcm = alpha * fctm_kNcm2 * Ig / yt;
+                const Mr = Mr_kNcm / 100; // kN.m
+
+                const razao = Md > 0 ? Mr / Md : 0;
+                const mrOk  = Mr <= Md; // se Mr < Md, seção vai fissurá → normal em ELU
+                // Na prática verificamos Mr vs 0.5·Md (item 17.3.5.2-a) para As,min
+                const asMinMr_kNcm2 = alpha * fctm_kNcm2 * Ig / yt; // = Mr_kNcm
+                // Verificação: As,min deve garantir Mr ≤ Mrd (já está implícita)
+
+                html += `
+                <div class="panel">
+                    <h3>📐 Momento de Fissuração — M<sub>r</sub> (NBR 6118 item 17.3.1)</h3>
+
+                    <!-- Fórmula com desenvolvimento -->
+                    <div style="background:rgba(30,41,59,0.6); padding:20px 24px; border-radius:8px; margin-bottom:22px;
+                                border:1px solid rgba(100,116,139,0.3); font-family:'JetBrains Mono',monospace;
+                                font-size:13px; color:#94a3b8; line-height:2.4;">
+
+                        <div style="color:#cbd5e1; font-size:14px; font-weight:700; margin-bottom:12px;">Memória de cálculo:</div>
+
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 32px;">
+                            <div>α &nbsp;&nbsp;&nbsp;= 1,5
+                                <span style="color:#475569; font-size:11px;"> (seção retangular — NBR 6118 item 17.3.1)</span></div>
+                            <div>y<sub>t</sub> = h / 2
+                                &nbsp;= ${h} / 2
+                                &nbsp;= <strong style="color:#e2e8f0;">${yt.toFixed(2)} cm</strong></div>
+
+                            <div>f<sub>ck</sub> = ${fck} MPa</div>
+                            <div>I<sub>g</sub> = b<sub>w</sub>·h³/12
+                                &nbsp;= ${bw}×${h}³/12
+                                &nbsp;= <strong style="color:#e2e8f0;">${Ig.toFixed(1)} cm⁴</strong></div>
+
+                            <div>f<sub>ct,m</sub> = 0,30·f<sub>ck</sub><sup>2/3</sup>
+                                &nbsp;= 0,30×${fck}<sup>2/3</sup>
+                                &nbsp;= <strong style="color:#e2e8f0;">${fctm.toFixed(4)} MPa</strong>
+                                &nbsp;= <strong style="color:#e2e8f0;">${fctm_kNcm2.toFixed(5)} kN/cm²</strong></div>
+                            <div></div>
+                        </div>
+
+                        <div style="margin-top:14px; padding-top:14px; border-top:1px solid rgba(100,116,139,0.3);">
+                            <div style="color:#cbd5e1; font-size:14px; margin-bottom:8px;">
+                                M<sub>r</sub> = α · f<sub>ct,m</sub> · I<sub>g</sub> / y<sub>t</sub>
+                            </div>
+                            <div>M<sub>r</sub> = ${alpha} × ${fctm_kNcm2.toFixed(5)} × ${Ig.toFixed(1)} / ${yt.toFixed(2)}</div>
+                            <div>M<sub>r</sub> = ${Mr_kNcm.toFixed(2)} kN.cm</div>
+                            <div style="margin-top:6px; font-size:19px; font-weight:800;
+                                        color:${razao <= 1 ? '#10b981' : '#f59e0b'};">
+                                M<sub>r</sub> = <strong>${Mr.toFixed(2)} kN.m</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards comparativos -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin-bottom:20px;">
+
+                        <div style="padding:18px; border-radius:10px; text-align:center;
+                                    border:2px solid rgba(139,92,246,0.4); background:rgba(139,92,246,0.1);">
+                            <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">M<sub>r</sub> — Fissuração</div>
+                            <div style="font-size:26px; font-weight:800; font-family:'JetBrains Mono',monospace; color:#a78bfa;">${Mr.toFixed(2)}</div>
+                            <div style="font-size:12px; color:#64748b;">kN.m</div>
+                        </div>
+
+                        <div style="padding:18px; border-radius:10px; text-align:center;
+                                    border:2px solid rgba(245,158,11,0.4); background:rgba(245,158,11,0.1);">
+                            <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">M<sub>d</sub> — Cálculo</div>
+                            <div style="font-size:26px; font-weight:800; font-family:'JetBrains Mono',monospace; color:#f59e0b;">${Md.toFixed(2)}</div>
+                            <div style="font-size:12px; color:#64748b;">kN.m</div>
+                        </div>
+
+                        <div style="padding:18px; border-radius:10px; text-align:center;
+                                    border:2px solid rgba(${razao<=1?'16,185,129':'245,158,11'},0.5);
+                                    background:rgba(${razao<=1?'16,185,129':'245,158,11'},0.1);">
+                            <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">Mr / Md</div>
+                            <div style="font-size:26px; font-weight:800; font-family:'JetBrains Mono',monospace;
+                                        color:${razao<=1?'#10b981':'#f59e0b'};">${razao.toFixed(3)}</div>
+                            <div style="font-size:12px; color:${razao<=1?'#10b981':'#f59e0b'}; margin-top:4px; font-weight:600;">
+                                ${razao<=1 ? 'Mr < Md — seção fissurada ✓' : 'Mr > Md — seção não fissurada'}
+                            </div>
+                        </div>
+
+                        <div style="padding:18px; border-radius:10px; text-align:center;
+                                    border:2px solid rgba(59,130,246,0.4); background:rgba(59,130,246,0.1);">
+                            <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">I<sub>g</sub></div>
+                            <div style="font-size:22px; font-weight:800; font-family:'JetBrains Mono',monospace; color:#60a5fa;">${Ig.toFixed(0)}</div>
+                            <div style="font-size:12px; color:#64748b;">cm⁴</div>
+                        </div>
+                    </div>
+
+                    <!-- Nota técnica -->
+                    <div style="padding:14px 18px; background:rgba(139,92,246,0.08); border-left:4px solid #8b5cf6;
+                                border-radius:4px; font-size:12px; color:#94a3b8; line-height:1.8;">
+                        <strong style="color:#a78bfa;">NBR 6118 item 17.3.1:</strong>
+                        M<sub>r</sub> é o momento de fissuração da seção bruta.
+                        Se M<sub>d</sub> &gt; M<sub>r</sub>, a seção estará fissurada em ELU — situação normal e esperada para vigas dimensionadas.
+                        A armadura mínima deve garantir que M<sub>rd</sub> ≥ 1,2·M<sub>r</sub> (item 17.3.5.2-a).<br>
+                        <span style="color:${a.Mrd >= 1.2*Mr ? '#10b981' : '#ef4444'}; font-weight:600;">
+                            Verificação: M<sub>rd</sub> = ${a.Mrd.toFixed(2)} kN.m
+                            ${a.Mrd >= 1.2*Mr ? '≥' : '<'}
+                            1,2·M<sub>r</sub> = ${(1.2*Mr).toFixed(2)} kN.m
+                            ${a.Mrd >= 1.2*Mr ? '✔ OK' : '❌ Aumentar As,min'}
+                        </span>
+                    </div>
+                </div>
+                `;
+            }
+
+            const dm = calcularDmin();
+            if (dm) {
+                const dAtual = a.d;
+                const dOk = dAtual >= dm.dmin;
+                html += `
+                <div class="panel">
+                    <h3>📏 Altura Útil Mínima — d<sub>min</sub></h3>
+
+                    <!-- Fórmula visual -->
+                    <div style="background:rgba(30,41,59,0.6); padding:18px 22px; border-radius:8px; margin-bottom:22px;
+                                border:1px solid rgba(100,116,139,0.3); font-family:'JetBrains Mono',monospace; font-size:13px; color:#94a3b8; line-height:2.2;">
+                        <div style="color:#cbd5e1; font-size:14px; font-weight:700; margin-bottom:10px;">Memória de cálculo:</div>
+                        <div>γ<sub>f</sub> &nbsp;= 1,4 &nbsp;&nbsp;&nbsp;(coeficiente de ponderação das ações)</div>
+                        <div>M<sub>k</sub> &nbsp;= M<sub>d</sub> / γ<sub>f</sub>  = ${dm.Md_kNm.toFixed(2)} / 1,4 = <strong style="color:#e2e8f0;">${(dm.Mk_kNcm/100).toFixed(4)} kN.m</strong></div>
+                        <div>f<sub>cd</sub> = f<sub>ck</sub> / (γ<sub>c</sub>×10) = ${dm.fck} / 14 = <strong style="color:#e2e8f0;">${dm.fcd_kNcm2.toFixed(4)} kN/cm²</strong></div>
+                        <div>KX<sub>lim</sub> = ε<sub>cu</sub>/(ε<sub>cu</sub>+ε<sub>yd</sub>) = <strong style="color:#e2e8f0;">${dm.KX_lim.toFixed(4)}</strong></div>
+                        <div>KMD<sub>lim</sub> = 0,68 · KX<sub>lim</sub> · (1−0,4·KX<sub>lim</sub>) = <strong style="color:#e2e8f0;">${dm.KMD_lim.toFixed(6)}</strong></div>
+                        <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(100,116,139,0.3);">
+                            <div style="color:#cbd5e1;">Fórmula:</div>
+                            <div style="margin:6px 0; font-size:14px;">
+                                d<sub>min</sub> = √( γ<sub>f</sub> · M<sub>k</sub> / (b<sub>w</sub> · KMD<sub>lim</sub> · f<sub>ck</sub>/1,4) )
+                            </div>
+                            <div style="margin:6px 0;">
+                                d<sub>min</sub> = √( 1,4 · ${(dm.Mk_kNcm/100).toFixed(4)}×100 / (${dm.bw} · ${dm.KMD_lim.toFixed(6)} · ${dm.fcd_kNcm2.toFixed(4)}) )
+                            </div>
+                            <div style="margin:6px 0;">
+                                d<sub>min</sub> = √( ${dm.Md_kNcm.toFixed(2)} / ${(dm.bw * dm.KMD_lim * dm.fcd_kNcm2).toFixed(6)} )
+                            </div>
+                            <div style="font-size:20px; font-weight:800; color:${dOk ? '#10b981' : '#f59e0b'}; margin-top:6px;">
+                                d<sub>min</sub> = ${dm.dmin.toFixed(3)} cm
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cards de comparação -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px;">
+                        <div style="padding:18px; border-radius:10px; border:2px solid rgba(245,158,11,0.4);
+                                    background:rgba(245,158,11,0.1); text-align:center;">
+                            <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">d<sub>min</sub> calculado</div>
+                            <div style="font-size:28px; font-weight:800; font-family:'JetBrains Mono',monospace; color:#f59e0b;">${dm.dmin.toFixed(3)}</div>
+                            <div style="font-size:12px; color:#64748b;">cm</div>
+                        </div>
+                        <div style="padding:18px; border-radius:10px; border:2px solid rgba(59,130,246,0.4);
+                                    background:rgba(59,130,246,0.1); text-align:center;">
+                            <div style="font-size:12px; color:#94a3b8; margin-bottom:4px;">d adotado</div>
+                            <div style="font-size:28px; font-weight:800; font-family:'JetBrains Mono',monospace; color:#60a5fa;">${dAtual}</div>
+                            <div style="font-size:12px; color:#64748b;">cm</div>
+                        </div>
+                        <div style="padding:18px; border-radius:10px; border:2px solid ${dOk ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)'};
+                                    background:${dOk ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; text-align:center; display:flex; flex-direction:column; justify-content:center;">
+                            <div style="font-size:34px;">${dOk ? '✅' : '⚠️'}</div>
+                            <div style="font-size:13px; font-weight:700; color:${dOk ? '#10b981' : '#f59e0b'}; margin-top:6px;">
+                                ${dOk ? `d ≥ d<sub>min</sub> — OK` : `d < d<sub>min</sub> — Aumentar seção`}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
+            // ── Verificação do Momento Resistente + Checklist ─────────────────────
+            const espRec = a.espacamentos.find(e => e.ok) || a.espacamentos[0];
+            const construtivo = !!a.espacamentos.find(e => e.ok);
+
+            // Itens do checklist
+            const checks = [
+                { label: 'fcd e fyd corretos (γc=1,4 / γs=1,15)',
+                  ok: true,
+                  detalhe: `fcd = ${a.fcd.toFixed(2)} MPa  |  fyd = ${a.fyd.toFixed(2)} MPa` },
+                { label: 'ξ = x/d calculado',
+                  ok: true,
+                  detalhe: `ξ = ${a.xi.toFixed(4)}  |  x = ${a.x.toFixed(2)} cm` },
+                { label: 'ξ ≤ ξ3,lim  (ductilidade)',
+                  ok: a.xi <= a.KX_lim,
+                  detalhe: `ξ = ${a.xi.toFixed(4)} ${a.xi <= a.KX_lim ? '≤' : '>'} ξ3,lim = ${a.KX_lim.toFixed(4)}` },
+                { label: 'εs ≥ εyd  (aço escoa)',
+                  ok: a.es >= a.eyd,
+                  detalhe: `εs = ${(a.es*1000).toFixed(2)}‰  |  εyd = ${(a.eyd*1000).toFixed(2)}‰` },
+                { label: 'Mrd ≥ Md  (seção resiste)',
+                  ok: a.mrdOk,
+                  detalhe: `Mrd = ${a.Mrd.toFixed(2)} kN.m  |  Md = ${a.Md.toFixed(2)} kN.m` },
+                { label: 'Armadura coerente construtivamente',
+                  ok: construtivo,
+                  detalhe: construtivo
+                    ? `${espRec.nTotal}φ${espRec.phi}mm  —  As = ${espRec.areaTotal.toFixed(2)} cm²`
+                    : 'Nenhuma opção cabe na largura bw — revisar seção' }
+            ];
+
+            const allOk = checks.every(c => c.ok);
+
+            html += `
+                <div class="panel">
+                    <h3>🔍 Análise e Verificação do Momento Resistente</h3>
+
+                    <!-- Card Mrd vs Md -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin-bottom:28px;">
+
+                        <div style="padding:22px; border-radius:10px; border:2px solid rgba(245,158,11,0.4);
+                                    background:linear-gradient(135deg,rgba(245,158,11,0.15),rgba(217,119,6,0.08));">
+                            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;font-weight:600;">Momento de Cálculo Md</div>
+                            <div style="font-size:30px;font-weight:800;font-family:'JetBrains Mono',monospace;color:#f59e0b;">${a.Md.toFixed(2)}</div>
+                            <div style="font-size:13px;color:#94a3b8;">kN.m</div>
+                        </div>
+
+                        <div style="padding:22px; border-radius:10px; border:2px solid ${a.mrdOk ? 'rgba(16,185,129,0.4)' : 'rgba(239,68,68,0.4)'};
+                                    background:linear-gradient(135deg,${a.mrdOk ? 'rgba(16,185,129,0.15),rgba(5,150,105,0.08)' : 'rgba(239,68,68,0.15),rgba(220,38,38,0.08)'});">
+                            <div style="font-size:13px;color:#94a3b8;margin-bottom:6px;font-weight:600;">Momento Resistente Mrd</div>
+                            <div style="font-size:30px;font-weight:800;font-family:'JetBrains Mono',monospace;color:${a.mrdOk ? '#10b981' : '#ef4444'};">${a.Mrd.toFixed(2)}</div>
+                            <div style="font-size:13px;color:#94a3b8;">kN.m</div>
+                        </div>
+
+                        <div style="padding:22px; border-radius:10px; border:2px solid ${a.mrdOk ? 'rgba(16,185,129,0.5)' : 'rgba(239,68,68,0.5)'};
+                                    background:${a.mrdOk ? 'rgba(16,185,129,0.1)' : 'rgba(239,68,68,0.1)'}; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                            <div style="font-size:42px;">${a.mrdOk ? '✅' : '❌'}</div>
+                            <div style="font-size:15px;font-weight:700;color:${a.mrdOk ? '#10b981' : '#ef4444'};margin-top:8px;">
+                                ${a.mrdOk ? 'Mrd ≥ Md  —  OK' : 'Mrd < Md  —  Aumentar As'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fórmula Mrd expandida -->
+                    <div style="background:rgba(30,41,59,0.6); padding:18px 22px; border-radius:8px; margin-bottom:28px;
+                                border:1px solid rgba(100,116,139,0.3); font-family:'JetBrains Mono',monospace; font-size:13px; color:#94a3b8; line-height:2.0;">
+                        <div style="color:#cbd5e1; font-size:14px; font-weight:700; margin-bottom:10px;">Desenvolvimento do cálculo:</div>
+                        <div>α<sub>c</sub> = ${a.alpha_c.toFixed(4)} &nbsp; λ = ${a.lambda.toFixed(4)} &nbsp; E<sub>s</sub> = 210 GPa &nbsp; ε<sub>cu</sub> = ${(a.ecu*1000).toFixed(2)}‰</div>
+                        <div>μ &nbsp;= M<sub>d</sub>/(f<sub>cd</sub>·b·d²) = ${a.Md.toFixed(2)}×100 / (${a.fcd_kNcm2.toFixed(4)}×${a.bw}×${a.d}²) = <strong style="color:#e2e8f0;">${a.mu.toFixed(6)}</strong></div>
+                        <div>ξ &nbsp;= (1/λ)·(1−√(1−2μ/α<sub>c</sub>)) = (1/${a.lambda.toFixed(2)})·(1−√(1−${(2/a.alpha_c).toFixed(4)}×${a.mu.toFixed(6)})) = <strong style="color:#e2e8f0;">${a.xi.toFixed(6)}</strong></div>
+                        <div>z &nbsp;= d·(1−λ/2·ξ) = ${a.d}×(1−${(a.lambda/2).toFixed(2)}×${a.xi.toFixed(5)}) = <strong style="color:#e2e8f0;">${(a.KZ*a.d).toFixed(3)} cm</strong></div>
+                        <div>ε<sub>s</sub> = ε<sub>cu</sub>·(1−ξ)/ξ = ${(a.ecu*1000).toFixed(2)}‰×(1−${a.xi.toFixed(4)})/${a.xi.toFixed(4)} = <strong style="color:#e2e8f0;">${(a.es*1000).toFixed(3)}‰</strong></div>
+                        <div>ε<sub>yd</sub>= f<sub>yd</sub>/E<sub>s</sub> = ${a.fyd_kNcm2.toFixed(4)}/21000 = <strong style="color:#e2e8f0;">${(a.eyd*1000).toFixed(3)}‰</strong></div>
+                        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(100,116,139,0.3);">
+                        M<sub>rd</sub> = α<sub>c</sub>·f<sub>cd</sub>·b·λ·x·(d−λ/2·x)<br>
+                        M<sub>rd</sub> = ${a.alpha_c.toFixed(4)} × ${a.fcd_kNcm2.toFixed(4)} × ${a.bw} × ${a.lambda.toFixed(2)} × ${a.x.toFixed(3)} × (${a.d} − ${(a.lambda/2).toFixed(2)} × ${a.x.toFixed(3)}) ÷ 100<br>
+                        M<sub>rd</sub> = <strong style="color:${a.mrdOk ? '#10b981' : '#ef4444'}; font-size:15px;">${a.Mrd.toFixed(2)} kN.m</strong>
+                        &nbsp;${a.mrdOk ? '≥' : '<'}&nbsp;
+                        M<sub>d</sub> = <strong style="color:#f59e0b;">${a.Md.toFixed(2)} kN.m</strong>
+                        &nbsp;<span style="font-size:15px;">${a.mrdOk ? '✔' : '✗'}</span>
+                        </div>
+                        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(100,116,139,0.3); color:#64748b; font-size:12px;">
+                        Verificação cruzada — eq.(4.40): A<sub>s</sub> = (α<sub>c</sub>·f<sub>cd</sub>/f<sub>yd</sub>)·b·λ·ξ·d = ${a.As_check.toFixed(3)} cm²
+                        &nbsp;${Math.abs(a.As_check - a.As) < 0.01 ? '✔ consistente' : '⚠ divergência'}</div>
+                    </div>
+
+                    <!-- Layout 2 colunas: Checklist | Tabela de Domínios -->
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:22px;">
+
+                        <!-- Checklist Final -->
+                        <div>
+                            <div style="font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:14px;">✅ Checklist Final — Projeto Real</div>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                ${checks.map(c => `
+                                <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;
+                                            background:${c.ok ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)'};
+                                            border:1px solid ${c.ok ? 'rgba(16,185,129,0.25)' : 'rgba(239,68,68,0.25)'};">
+                                    <span style="font-size:16px;line-height:1.4;flex-shrink:0;">${c.ok ? '✔' : '✗'}</span>
+                                    <div>
+                                        <div style="font-size:13px;font-weight:600;color:${c.ok ? '#a7f3d0' : '#fca5a5'};">${c.label}</div>
+                                        <div style="font-size:11px;color:#64748b;font-family:'JetBrains Mono',monospace;margin-top:2px;">${c.detalhe}</div>
+                                    </div>
+                                </div>`).join('')}
+                            </div>
+                            <div style="margin-top:14px;padding:12px 16px;border-radius:8px;
+                                        background:${allOk ? 'rgba(16,185,129,0.15)' : 'rgba(239,68,68,0.15)'};
+                                        border:2px solid ${allOk ? '#10b981' : '#ef4444'};
+                                        font-size:14px;font-weight:700;color:${allOk ? '#10b981' : '#ef4444'};text-align:center;">
+                                ${allOk ? '✅ Projeto aprovado em todos os critérios' : '❌ Revisar itens reprovados antes de detalhar'}
+                            </div>
+                        </div>
+
+                        <!-- Tabela de Domínios -->
+                        <div>
+                            <div style="font-size:15px;font-weight:700;color:#e2e8f0;margin-bottom:14px;">📊 Resumo — Domínios de Deformação</div>
+                            <div style="overflow-x:auto;">
+                                <table style="width:100%;border-collapse:collapse;font-size:13px;font-family:'JetBrains Mono',monospace;">
+                                    <thead>
+                                        <tr style="background:rgba(59,130,246,0.2);border-bottom:2px solid #3b82f6;">
+                                            <th style="padding:10px 12px;text-align:left;color:#cbd5e1;">Condição</th>
+                                            <th style="padding:10px 12px;text-align:center;color:#cbd5e1;">Resultado</th>
+                                            <th style="padding:10px 12px;text-align:center;color:#cbd5e1;">Situação atual</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="border-bottom:1px solid rgba(100,116,139,0.2);
+                                                   background:${a.dominio.num===2 ? 'rgba(245,158,11,0.15)' : 'rgba(30,41,59,0.3)'};">
+                                            <td style="padding:10px 12px;color:#e2e8f0;">ε<sub>s</sub> &lt; ε<sub>yd</sub></td>
+                                            <td style="padding:10px 12px;text-align:center;color:#f59e0b;">Domínio 2</td>
+                                            <td style="padding:10px 12px;text-align:center;color:${a.dominio.num===2 ? '#f59e0b' : '#475569'};">
+                                                ${a.dominio.num===2 ? '◀ este caso' : '—'}
+                                            </td>
+                                        </tr>
+                                        <tr style="border-bottom:1px solid rgba(100,116,139,0.2);
+                                                   background:${a.dominio.num===3 ? 'rgba(16,185,129,0.15)' : 'rgba(30,41,59,0.3)'};">
+                                            <td style="padding:10px 12px;color:#e2e8f0;">ε<sub>s</sub> ≥ ε<sub>yd</sub>  e  ξ ≤ ξ<sub>3,lim</sub> = ${a.KX_lim.toFixed(4)}</td>
+                                            <td style="padding:10px 12px;text-align:center;color:#10b981;">Domínio 3 ✔</td>
+                                            <td style="padding:10px 12px;text-align:center;color:${a.dominio.num===3 ? '#10b981' : '#475569'};">
+                                                ${a.dominio.num===3 ? '◀ este caso' : '—'}
+                                            </td>
+                                        </tr>
+                                        <tr style="background:${a.dominio.num===4 ? 'rgba(239,68,68,0.15)' : 'rgba(30,41,59,0.3)'};">
+                                            <td style="padding:10px 12px;color:#e2e8f0;">ξ &gt; ξ<sub>3,lim</sub> = ${a.KX_lim.toFixed(4)}</td>
+                                            <td style="padding:10px 12px;text-align:center;color:#ef4444;">Domínio 4 ❌</td>
+                                            <td style="padding:10px 12px;text-align:center;color:${a.dominio.num===4 ? '#ef4444' : '#475569'};">
+                                                ${a.dominio.num===4 ? '◀ este caso' : '—'}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- Banner domínio atual -->
+                            <div style="margin-top:16px;padding:14px 18px;border-radius:8px;
+                                        background:${a.dominio.num===4 ? 'rgba(239,68,68,0.12)' : a.dominio.num===3 ? 'rgba(16,185,129,0.12)' : 'rgba(245,158,11,0.12)'};
+                                        border:2px solid ${a.dominio.cor};">
+                                <div style="font-size:18px;font-weight:800;color:${a.dominio.cor};font-family:'JetBrains Mono',monospace;">
+                                    ${a.dominio.label}
+                                </div>
+                                <div style="font-size:12px;color:#94a3b8;margin-top:5px;">${a.dominio.desc}</div>
+                                <div style="font-size:12px;color:#64748b;margin-top:4px;font-family:'JetBrains Mono',monospace;">
+                                    ξ = ${a.xi.toFixed(4)}  |  εs = ${(a.es*1000).toFixed(3)}‰  |  εyd = ${(a.eyd*1000).toFixed(3)}‰
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // ── Seção transversal ───────────────────────────────────────────────
+            const espRecomendado = a.espacamentos.find(e => e.ok) || a.espacamentos[0];
+            html += `
+                <div class="panel">
+                    <h3>📐 Seção Transversal — Detalhamento Adotado</h3>
+                    <div style="display:flex; flex-wrap:wrap; gap:30px; align-items:flex-start;">
+                        <div style="flex:0 0 auto; overflow-x:auto;">
+                            ${gerarSecaoTransversal(a, espRecomendado)}
+                        </div>
+                        <div style="flex:1; min-width:220px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#94a3b8; line-height:2;">
+                            <div style="font-size:15px; font-weight:700; color:#e2e8f0; margin-bottom:12px;">Detalhamento recomendado</div>
+                            <div>🔶 <strong style="color:#f59e0b;">${espRecomendado.label}</strong></div>
+                            <div>As fornecida = <strong style="color:#10b981;">${espRecomendado.areaTotal.toFixed(2)} cm²</strong></div>
+                            <div>As necessária = ${a.As.toFixed(2)} cm²</div>
+                            <div>As mínima = ${a.AsMin.toFixed(2)} cm²</div>
+                            <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(100,116,139,0.3);">
+                                <div>h = <strong style="color:#e2e8f0;">${a.h} cm</strong> <span style="color:#475569;font-size:11px;">(fixo)</span></div>
+                                ${(() => {
+                                    const nc = espRecomendado.numCamadas;
+                                    const phi = espRecomendado.phiCm;
+                                    const espacEC = espRecomendado.espacEntrecamadas || Math.max(2.0, phi);
+                                    const covBot = a.cobrimento + 0.6 + phi/2;
+                                    const yFromBot = espRecomendado.distrib.map((_,i) => covBot + i*(phi+espacEC));
+                                    const totalN = espRecomendado.distrib.reduce((s,n)=>s+n,0);
+                                    const cgFromBot = espRecomendado.distrib.reduce((s,n,i)=>s+n*yFromBot[i],0)/totalN;
+                                    const d_ef = a.h - cgFromBot;
+                                    const diffD = Math.abs(d_ef - a.d);
+                                    return `
+                                    <div>d adotado = <strong style="color:#60a5fa;">${a.d} cm</strong></div>
+                                    ${nc > 1 ? `
+                                    <div>CG As = ${cgFromBot.toFixed(2)} cm do fundo</div>
+                                    <div style="color:${diffD > 0.5 ? '#f59e0b' : '#10b981'}">
+                                        d efetivo = <strong>${d_ef.toFixed(2)} cm</strong>
+                                        ${diffD > 0.5 ? ' ⚠ recalcular com d=' + d_ef.toFixed(1) + ' cm' : ' ✔'}
+                                    </div>` : ''}
+                                    `;
+                                })()}
+                                <div>Zona comprimida</div>
+                                <div>x = ξ · d = ${a.x.toFixed(2)} cm</div>
+                                <div>ξ = ${a.KX.toFixed(4)} ${a.KX <= a.KX_lim ? '✓' : '⚠'}</div>
+                                <div>Braço de alavanca</div>
+                                <div>z = (1−λ/2·ξ)·d = ${(a.KZ*a.d).toFixed(2)} cm</div>
+                            </div>
+                            <div style="margin-top:10px; padding-top:10px; border-top:1px solid rgba(100,116,139,0.3); font-size:11px; color:#64748b;">
+                                Legenda:<br>
+                                <span style="color:#93c5fd;">■</span> Zona comprimida<br>
+                                <span style="color:#3b82f6;">╌</span> Linha neutra (L.N.)<br>
+                                <span style="color:#f59e0b;">╌</span> CG das armaduras (d efetivo)<br>
+                                <span style="color:#f59e0b;">●</span> Armadura longitudinal<br>
+                                <span style="color:#64748b;">╌</span> Estribo
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // ── Painel de Flecha ──────────────────────────────────────────────────
+            html += gerarPainelFlecha(a);
+
+            container.innerHTML = html;
+        }
+
+        // ============= CÁLCULO DA FLECHA (Fig. 5-10) =============
+        function gerarPainelFlecha(arm) {
+            const { fck, bw, h, d, AsFinal: As } = arm;
+            const L_m  = resultados.comprimentoViga;
+            const L    = L_m * 100;                          // cm
+            const apoE = document.getElementById('apoioEsq').value;
+            const apoD = document.getElementById('apoioDir').value;
+            const uni  = resultados.unidade;
+
+            // ── Módulo de elasticidade (NBR 6118 item 8.2.8) ─────────────────────
+            const Eci_MPa = 5600 * Math.sqrt(fck);
+            const Ecs_MPa = 0.85 * Eci_MPa;
+            const E       = Ecs_MPa / 10;                    // kN/cm²
+
+            // ── Momentos de inércia ───────────────────────────────────────────────
+            const Ig = bw * Math.pow(h, 3) / 12;            // cm⁴
+
+            // Linha neutra e Inércia da seção fissurada (estádio II)
+            const alphaE = 210000 / Ecs_MPa;                 // αe = Es/Ecs
+            const A_c = bw / 2, B_c = alphaE * As, C_c = -alphaE * As * d;
+            const xII = (-B_c + Math.sqrt(B_c*B_c - 4*A_c*C_c)) / (2*A_c);
+            const I2  = bw * Math.pow(xII,3)/3 + alphaE * As * Math.pow(d-xII, 2);
+
+            // ── Momento de fissuração (ELS: fctk,inf) ────────────────────────────
+            const fctm       = 0.30 * Math.pow(fck, 2/3);   // MPa
+            const fctk_inf   = 0.7  * fctm;                  // MPa
+            const Mr         = 1.5  * (fctk_inf/10) * Ig / (h/2); // kN.cm
+
+            // ── Momento de serviço (Mk) ───────────────────────────────────────────
+            let Md_kNcm = resultados.Mmax * 100;
+            if (resultados.unidade === 'tf') Md_kNcm *= 9.81;
+            const Mk = Md_kNcm / 1.4;                        // kN.cm (γf ≈ 1,4)
+
+            // ── Ie (Branson) ──────────────────────────────────────────────────────
+            const fissurada = Mk > Mr;
+            let Ie;
+            if (!fissurada) {
+                Ie = Ig;
+            } else {
+                const r = Mr / Mk;
+                Ie = Math.pow(r,3)*Ig + (1 - Math.pow(r,3))*I2;
+            }
+            const EI = E * Ie;
+
+            // ── Identificar configuração ─────────────────────────────────────────
+            const ehBiap  = apoE==='apoio'     && apoD==='apoio';
+            const ehCons  = (apoE==='engastado' && apoD==='livre') || (apoE==='livre' && apoD==='engastado');
+            const ehFF    = apoE==='engastado' && apoD==='engastado';
+            const ehFA    = (apoE==='engastado' && apoD==='apoio') || (apoE==='apoio' && apoD==='engastado');
+            const configLabel = ehBiap?'Simplesmente Apoiada': ehCons?'Console (Balanço)':
+                                ehFF  ?'Biengastada'         : ehFA  ?'Engastada-Apoiada':'—';
+
+            // ── Superposição das cargas ───────────────────────────────────────────
+            let f_total_cm = 0;
+            const detalhes = [];
+
+            cargas.forEach(carga => {
+                let fi = 0, formula = '';
+
+                if (carga.tipo === 'distribuida') {
+                    const w  = carga.valor / 100;             // kN/m → kN/cm
+                    const a1 = (carga.inicio ?? 0) * 100;
+                    const a2 = (carga.fim    ?? L_m) * 100;
+                    const len = a2 - a1;
+                    const fullSpan = Math.abs(len - L) < 1;
+
+                    if (ehBiap) {
+                        fi = fullSpan
+                            ? 5*w*Math.pow(L,4)/(384*EI)
+                            : 5*w*Math.pow(len,4)/(384*EI)*(len/L);
+                        formula = fullSpan ? 'f = 5pℓ⁴/(384EI)' : 'f ≈ 5p·a⁴/(384EI)·(a/L)  [parcial]';
+                    } else if (ehCons) {
+                        fi = w*Math.pow(L,4)/(8*EI);
+                        formula = 'f = pℓ⁴/(8EI)';
+                    } else if (ehFF) {
+                        fi = w*Math.pow(L,4)/(384*EI);
+                        formula = 'f = pℓ⁴/(384EI)';
+                    } else if (ehFA) {
+                        fi = 2*w*Math.pow(L,4)/(384*EI); // ≈ valor intermediário
+                        formula = 'f ≈ 2pℓ⁴/(384EI)';
+                    }
+                    if (fi > 0) detalhes.push({ label:`q=${carga.valor} ${uni}/m`, formula, fi });
+
+                } else { // pontual
+                    const P = carga.valor;
+                    const a = carga.posicao * 100;
+                    const b = L - a;
+                    const aa = Math.min(a,b);
+
+                    if (ehBiap) {
+                        if (Math.abs(a - L/2) < 1) {
+                            fi = P*Math.pow(L,3)/(48*EI);
+                            formula = 'f = Pℓ³/(48EI)  [central]';
+                        } else {
+                            // Fig 5-10: Pa(ℓ²-a²)^(3/2) / (9√3·EI·ℓ)
+                            fi = P*aa*Math.pow(L*L-aa*aa, 1.5) / (9*Math.sqrt(3)*EI*L);
+                            formula = 'f = Pa(ℓ²-a²)^(3/2)/(9√3·EI·ℓ)';
+                        }
+                    } else if (ehCons) {
+                        fi = P*Math.pow(L,3)/(3*EI);
+                        formula = 'f = Pℓ³/(3EI)';
+                    } else if (ehFF) {
+                        // deflexão no ponto de aplicação: Pa³b³/(3EIL³)
+                        fi = P*Math.pow(aa,3)*Math.pow(L-aa,3)/(3*EI*Math.pow(L,3));
+                        formula = 'f = Pa³b³/(3EIL³)';
+                    } else if (ehFA) {
+                        fi = P*Math.pow(aa,2)*Math.pow(b,2)/(3*EI*L);
+                        formula = 'f ≈ Pa²b²/(3EIL)  [misto]';
+                    }
+                    if (fi > 0) detalhes.push({ label:`P=${P} ${uni} a ${carga.posicao}m`, formula, fi });
+                }
+                f_total_cm += fi;
+            });
+
+            const f_mm = f_total_cm * 10;                    // cm → mm
+            const lim_L250 = L_m*1000/250;
+            const lim_L350 = L_m*1000/350;
+            const lim_L500 = L_m*1000/500;
+            const ok250 = f_mm <= lim_L250;
+            const ok350 = f_mm <= lim_L350;
+
+            return `
+            <div class="panel">
+                <h3>📉 Verificação da Flecha — ELS (NBR 6118 item 17.3)</h3>
+
+                <div style="background:rgba(30,41,59,0.6); padding:18px 24px; border-radius:8px; margin-bottom:20px;
+                            border:1px solid rgba(100,116,139,0.3); font-family:'JetBrains Mono',monospace;
+                            font-size:13px; color:#94a3b8; line-height:2.2;">
+                    <div style="color:#cbd5e1; font-weight:700; font-size:14px; margin-bottom:10px;">Parâmetros de rigidez EI:</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0 32px;">
+                        <div>Eci = 5600·√${fck} = <strong style="color:#e2e8f0;">${Eci_MPa.toFixed(0)} MPa</strong></div>
+                        <div>Ecs = 0,85·Eci &nbsp;= <strong style="color:#e2e8f0;">${Ecs_MPa.toFixed(0)} MPa = ${E.toFixed(2)} kN/cm²</strong></div>
+                        <div>Ig = ${bw}·${h}³/12 &nbsp;= <strong style="color:#e2e8f0;">${Ig.toFixed(0)} cm⁴</strong></div>
+                        <div>αe = Es/Ecs &nbsp;&nbsp;&nbsp;&nbsp;= <strong style="color:#e2e8f0;">${alphaE.toFixed(2)}</strong></div>
+                        <div>x<sub>II</sub> &nbsp;= <strong style="color:#e2e8f0;">${xII.toFixed(2)} cm</strong> (L.N. fissurada)</div>
+                        <div>I<sub>II</sub> &nbsp;&nbsp;= <strong style="color:#e2e8f0;">${I2.toFixed(0)} cm⁴</strong></div>
+                        <div>Mr = 1,5·fctk,inf·Ig/yt = <strong style="color:#a78bfa;">${(Mr/100).toFixed(2)} kN.m</strong></div>
+                        <div>Mk ≈ Md/1,4 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong style="color:${fissurada?'#ef4444':'#10b981'};">${(Mk/100).toFixed(2)} kN.m ${fissurada?'⚠ fissurada':'✔ íntegra'}</strong></div>
+                        <div>Ie (Branson) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong style="color:#e2e8f0;">${Ie.toFixed(0)} cm⁴ &nbsp;(${(Ie/Ig*100).toFixed(0)}% de Ig)</strong></div>
+                        <div>EI &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <strong style="color:#e2e8f0;">${(EI/1e6).toFixed(2)}×10⁶ kN.cm²</strong></div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:20px;">
+                    <div style="font-size:14px; font-weight:700; color:#cbd5e1; margin-bottom:12px;">
+                        Esquema: <span style="color:#60a5fa;">${configLabel}</span>
+                        &nbsp;|&nbsp; L = ${L_m} m
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; font-family:'JetBrains Mono',monospace; font-size:12px;">
+                        <thead>
+                            <tr style="background:rgba(59,130,246,0.2); border-bottom:2px solid #3b82f6;">
+                                <th style="padding:9px 12px; text-align:left; color:#cbd5e1;">Carga</th>
+                                <th style="padding:9px 12px; text-align:left; color:#cbd5e1;">Fórmula (Fig. 5-10)</th>
+                                <th style="padding:9px 12px; text-align:right; color:#cbd5e1;">f (mm)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${detalhes.map(det=>`
+                            <tr style="border-bottom:1px solid rgba(100,116,139,0.2); background:rgba(30,41,59,0.3);">
+                                <td style="padding:9px 12px; color:#e2e8f0;">${det.label}</td>
+                                <td style="padding:9px 12px; color:#94a3b8;">${det.formula}</td>
+                                <td style="padding:9px 12px; text-align:right; color:#f59e0b; font-weight:600;">${(det.fi*10).toFixed(3)}</td>
+                            </tr>`).join('')}
+                            <tr style="background:rgba(59,130,246,0.1); border-top:2px solid #3b82f6;">
+                                <td colspan="2" style="padding:10px 12px; color:#cbd5e1; font-weight:700;">TOTAL (superposição)</td>
+                                <td style="padding:10px 12px; text-align:right; color:${ok250?'#10b981':'#ef4444'}; font-size:16px; font-weight:800;">${f_mm.toFixed(3)} mm</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(175px,1fr)); gap:14px; margin-bottom:16px;">
+                    <div style="padding:16px; border-radius:10px; text-align:center;
+                                border:2px solid rgba(99,102,241,0.4); background:rgba(99,102,241,0.1);">
+                        <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">Flecha imediata</div>
+                        <div style="font-size:28px; font-weight:800; font-family:'JetBrains Mono',monospace; color:#818cf8;">${f_mm.toFixed(2)}</div>
+                        <div style="font-size:11px; color:#64748b;">mm</div>
+                    </div>
+                    <div style="padding:16px; border-radius:10px; text-align:center;
+                                border:2px solid ${ok250?'rgba(16,185,129,0.4)':'rgba(239,68,68,0.4)'};
+                                background:${ok250?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.1)'};">
+                        <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">L/250 = ${lim_L250.toFixed(1)} mm</div>
+                        <div style="font-size:24px; font-weight:800; font-family:'JetBrains Mono',monospace; color:${ok250?'#10b981':'#ef4444'};">${ok250?'✔ OK':'✗'}</div>
+                        <div style="font-size:11px; color:${ok250?'#10b981':'#ef4444'};">flecha total</div>
+                    </div>
+                    <div style="padding:16px; border-radius:10px; text-align:center;
+                                border:2px solid ${ok350?'rgba(16,185,129,0.4)':'rgba(239,68,68,0.4)'};
+                                background:${ok350?'rgba(16,185,129,0.1)':'rgba(239,68,68,0.1)'};">
+                        <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">L/350 = ${lim_L350.toFixed(1)} mm</div>
+                        <div style="font-size:24px; font-weight:800; font-family:'JetBrains Mono',monospace; color:${ok350?'#10b981':'#ef4444'};">${ok350?'✔ OK':'✗'}</div>
+                        <div style="font-size:11px; color:${ok350?'#10b981':'#ef4444'};">flecha ativa</div>
+                    </div>
+                    <div style="padding:16px; border-radius:10px; text-align:center;
+                                border:2px solid rgba(100,116,139,0.3); background:rgba(30,41,59,0.5);">
+                        <div style="font-size:11px; color:#94a3b8; margin-bottom:4px;">L/500 = ${lim_L500.toFixed(1)} mm</div>
+                        <div style="font-size:20px; font-weight:800; font-family:'JetBrains Mono',monospace; color:${f_mm<=lim_L500?'#10b981':'#64748b'};">${f_mm<=lim_L500?'✔ OK':'—'}</div>
+                        <div style="font-size:11px; color:#64748b;">com alvenaria</div>
+                    </div>
+                </div>
+
+                <div style="padding:12px 16px; background:rgba(139,92,246,0.08); border-left:4px solid #7c3aed;
+                            border-radius:4px; font-size:12px; color:#94a3b8; line-height:1.8;">
+                    <strong style="color:#a78bfa;">NBR 6118 item 13.3:</strong>
+                    L/250 = flecha total pós-construção (aceitabilidade sensorial) ·
+                    L/350 = parcela ativa após instalação de elementos não estruturais ·
+                    L/500 = risco de dano em paredes de alvenaria.<br>
+                    <span style="color:#64748b; font-size:11px;">Ie pelo método de Branson (NBR item 17.3.2). Não considera fluência (φ∞). Para flecha total de longa duração multiplicar pela expressão: f_tot = f_imediata · (1 + αf), onde αf depende da taxa de armadura comprimida e φ∞.</span>
+                </div>
+            </div>
+            `;
+        }
+        const calcularOriginal = calcular;
+        calcular = function() {
+            calcularOriginal();
+            if (resultados) {
+                atualizarDmin();
+                renderizarArmadura();
+            }
+        };
+    
+    </script>
+</body>
+</html>
